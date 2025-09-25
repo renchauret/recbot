@@ -1,11 +1,9 @@
-import { Client, Events, GatewayIntentBits, GuildScheduledEventStatus, MessageFlags } from 'discord.js'
+import { Client, Events, GatewayIntentBits, MessageFlags } from 'discord.js'
 import { configDotenv } from 'dotenv'
 import { commands } from './commands/commands.ts'
-import { getAllProfiles, saveProfile } from './db/utils.ts'
-import { randomInt } from 'node:crypto'
-import { CronJob } from 'cron'
+import { startPickRecJob } from './cron/pick-rec.ts'
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] })
+export const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] })
 
 client.once(Events.ClientReady, readyClient => {
     console.log(`Ready! Logged in as ${readyClient.user.tag}`)
@@ -33,26 +31,6 @@ client.on(Events.InteractionCreate, async interaction => {
     }
 })
 
-client.on(Events.GuildScheduledEventUpdate, async (oldScheduledEvent, newScheduledEvent) => {
-    console.log(newScheduledEvent)
-    if (newScheduledEvent.name !== 'pick rec') {
-        return
-    }
-    // Check if the event status changed to ACTIVE (started)
-    if (oldScheduledEvent.status !== GuildScheduledEventStatus.Active && newScheduledEvent.status === GuildScheduledEventStatus.Active) {
-        console.log(`Scheduled event "${newScheduledEvent.name}" has started!`);
-    }
-    const profiles = getAllProfiles(newScheduledEvent.guildId)
-    const pickedProfile = profiles[randomInt(0, profiles.length)]
-    const pickedRec= pickedProfile.recs.splice(0, 1)[0]
-    pickedProfile.pickedRecs.push({
-        name: pickedRec,
-        pickedDate: Date.now()
-    })
-    saveProfile(newScheduledEvent.guildId, pickedProfile)
-    await newScheduledEvent.channel.send(`Our new recommendation is ${pickedRec} from ${pickedProfile.displayName}!`)
-})
-
 client.on('messageCreate', receivedMessage => {
     console.log(`received message`)
 
@@ -74,9 +52,4 @@ if (process.env.token) {
     console.log('Could not find token environment variable. Please supply it via command line using the --env-file flag.')
 }
 
-const pickRecJob = CronJob.from({
-    cronTime: '0 * * * * *',
-    onTick: () => console.log('new minute'),
-    start: true,
-    timeZone: 'America/New_York'
-})
+startPickRecJob()
