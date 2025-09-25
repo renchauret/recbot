@@ -3,15 +3,15 @@ import fs from 'fs'
 
 const getGuildDbPath = (guildId: string) => `./db/guilds/${guildId}`
 const getProfileDbPath = (guildId: string, profileId: string) => {
-    createGuildDbIfNotExist(guildId)
-    return `${getGuildDbPath(guildId)}/${profileId}.json`
+    return `${getOrCreateGuildDb(guildId)}/${profileId}.json`
 }
 
-const createGuildDbIfNotExist = (guildId: string) => {
+const getOrCreateGuildDb = (guildId: string): string => {
     const fileDir = getGuildDbPath(guildId)
     if (!fs.existsSync(fileDir)){
         fs.mkdirSync(fileDir, { recursive: true });
     }
+    return fileDir
 }
 
 const getProfile = (guildId: string, profileId: string): Profile | null => {
@@ -38,4 +38,20 @@ export const getOrCreateProfile = (guildId: string, profileId: string, displayNa
     profile.displayName = displayName
     saveProfile(guildId, profile)
     return profile
+}
+
+export const getAllProfiles = (guildId: string): Profile[] => {
+    getOrCreateGuildDb(guildId)
+    const profiles = []
+    try {
+        const files = fs.readdirSync(getOrCreateGuildDb(guildId));
+
+        files.forEach(file => {
+            console.log(file)
+            profiles.push(getProfile(guildId, file.split('.')[0]))
+        })
+    } catch (err) {
+        console.error('Error reading directory:', err)
+    }
+    return profiles
 }

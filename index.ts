@@ -32,6 +32,9 @@ client.on(Events.InteractionCreate, async interaction => {
 })
 
 client.on(Events.GuildScheduledEventUpdate, async (oldScheduledEvent, newScheduledEvent) => {
+    if (newScheduledEvent.name !== 'pick rec') {
+        return
+    }
     // Check if the event status changed to ACTIVE (started)
     if (oldScheduledEvent.status !== GuildScheduledEventStatus.Active && newScheduledEvent.status === GuildScheduledEventStatus.Active) {
         console.log(`Scheduled event "${newScheduledEvent.name}" has started!`);
