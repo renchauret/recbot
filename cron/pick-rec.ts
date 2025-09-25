@@ -38,4 +38,5 @@ export const startPickRecJob = () => {
         start: true,
         timeZone: 'America/New_York'
     })
+    console.log('started pickrec job')
 }
