@@ -1,4 +1,4 @@
-import type { Profile } from '../models/profile.js'
+import type { Profile } from '../models/profile.ts'
 import fs from 'fs'
 
 const getGuildDbPath = (guildId: string) => `./db/${guildId}`
