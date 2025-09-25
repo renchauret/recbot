@@ -35,5 +35,5 @@ export const startPromptDiscussionJob = () => {
         start: true,
         timeZone: 'America/New_York'
     })
-    console.log('started pickrec job')
+    console.log('started promptdiscussion job')
 }
