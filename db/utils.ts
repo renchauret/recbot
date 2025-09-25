@@ -31,8 +31,7 @@ export const getOrCreateProfile = (guildId: string, profileId: string, displayNa
         id: profileId,
         displayName: displayName,
         recs: [],
-        recsPicked: 0,
-        lastRecPickedDate: null
+        pickedRecs: []
     }
     // update user's displayName in case they've changed it
     profile.displayName = displayName

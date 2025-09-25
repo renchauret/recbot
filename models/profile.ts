@@ -1,7 +1,11 @@
+export type PickedRec = {
+    name: string,
+    pickedDate: number
+}
+
 export type Profile = {
     id: string,
     displayName: string,
     recs: string[],
-    recsPicked: number,
-    lastRecPickedDate: number | null
+    pickedRecs: PickedRec[]
 }
