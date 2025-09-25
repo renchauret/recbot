@@ -12,10 +12,11 @@ const getOrCreateGuildDirPath = (guildId: string): string => {
     if (!fs.existsSync(guildDirPath)){
         fs.mkdirSync(`${guildDirPath}/profiles`, { recursive: true });
         const guild: Guild = {
+            id: guildId,
             preferredChannelId: null,
             pickedRecs: []
         }
-        fs.writeFileSync(`${guildDirPath}/guild.json`, JSON.stringify(guild), 'utf8')
+        saveGuild(guild)
     }
     return guildDirPath
 }
@@ -30,6 +31,11 @@ const getProfile = (guildId: string, profileId: string): Profile | null => {
 export const saveProfile = (guildId: string, profile: Profile) => {
     const profileFilePath = getProfileFilePath(guildId, profile.id)
     fs.writeFileSync(profileFilePath, JSON.stringify(profile), 'utf8')
+}
+
+export const saveGuild = (guild: Guild) => {
+    const guildFilePath = getGuildFilePath(guild.id)
+    fs.writeFileSync(guildFilePath, JSON.stringify(guild), 'utf8')
 }
 
 export const getOrCreateProfile = (guildId: string, profileId: string, displayName: string): Profile => {
@@ -65,6 +71,7 @@ export const getAllGuildIds = (): string[] => fs.readdirSync(GUILDS_DIR)
 export const initGuild = (guildId: string, preferredChannelId: string) => {
     const guildDirPath = getOrCreateGuildDirPath(guildId)
     const guild: Guild = getGuild(guildId) ?? {
+        id: guildId,
         preferredChannelId: preferredChannelId,
         pickedRecs: []
     }
@@ -82,8 +89,25 @@ const getGuild = (guildId: string): Guild | null => {
 export const getPreferredChannelId = (guildId: string): string | null => getGuild(guildId)?.preferredChannelId
 export const getMostRecentPickedRec = (guildId: string): PickedRec | null => {
     const pickedRecs = getGuild(guildId)?.pickedRecs
-    if (pickedRecs === null || pickedRecs.length === 0) {
+    if (pickedRecs === null || pickedRecs === undefined || pickedRecs.length === 0) {
         return null
     }
     return pickedRecs[pickedRecs.length - 1]
+}
+
+export const savePicRec = (guildId: string, profile: Profile): PickedRec => {
+    const pickedRecName = profile.recs.splice(0, 1)[0]
+    const pickedRec = {
+        name: pickedRecName,
+        pickedDate: Date.now()
+    }
+    profile.pickedRecs.push()
+    saveProfile(guildId, profile)
+    const guild = getGuild(guildId) ?? {
+        id: guildId,
+        preferredChannelId: null,
+        pickedRecs: []
+    }
+    guild.pickedRecs.push(pickedRec)
+    return pickedRec
 }

@@ -1,4 +1,4 @@
-import { getAllGuildIds, getAllProfiles, getPreferredChannelId, saveProfile } from '../db/utils.ts'
+import { getAllGuildIds, getAllProfiles, getPreferredChannelId, savePicRec, saveProfile } from '../db/utils.ts'
 import { randomInt } from 'node:crypto'
 import { client } from '../index.ts'
 import { CronJob } from 'cron'
@@ -17,14 +17,9 @@ const pickRec = async (guildId: string) => {
 
     const profiles = getAllProfiles(guildId)
     const pickedProfile = profiles[randomInt(0, profiles.length)]
-    const pickedRec= pickedProfile.recs.splice(0, 1)[0]
-    pickedProfile.pickedRecs.push({
-        name: pickedRec,
-        pickedDate: Date.now()
-    })
-    saveProfile(guildId, pickedProfile)
+    const pickedRec = savePicRec(guildId, pickedProfile)
 
-    await channel.send(`Our new recommendation is ${pickedRec} from ${pickedProfile.displayName}!`)
+    await channel.send(`Our new recommendation is ${pickedRec.name} from ${pickedProfile.displayName}!`)
 }
 
 const pickRecs = () => {
