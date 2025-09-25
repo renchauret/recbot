@@ -3,7 +3,7 @@ import fs from 'fs'
 import type { RecbotCommand } from './commands.js'
 import type { Profile } from '../models/profile.js'
 
-export const recCommand: RecbotCommand = {
+export const viewRecCommand: RecbotCommand = {
     data: new SlashCommandBuilder()
         .setName('rec')
         .setDescription('Adds the following string to your recommendation queue.')
