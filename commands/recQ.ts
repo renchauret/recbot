@@ -3,19 +3,14 @@ import fs from 'fs'
 import type { RecbotCommand } from './commands.js'
 import type { Profile } from '../models/profile.js'
 
-export const queue: RecbotCommand = {
+export const recQ: RecbotCommand = {
     data: new SlashCommandBuilder()
-        .setName('rec')
-        .setDescription('Adds the following string to your recommendation queue.')
-        .addStringOption(option =>
-            option.setName('recommendation')
-                .setDescription('Enter the name of or link to your recommendation.')
-                .setRequired(true)
-        ),
+        .setName('recQ')
+        .setDescription('Shows you your rec queue.'),
     execute: async (interaction: ChatInputCommandInteraction) => {
         const user = interaction.user
-        const recommendation = interaction.options.getString('recommendation')
-        const filePath = `../db/${interaction.guildId}/${user.id}.json`
+        const fileDir = `../db/${interaction.guildId}`
+        const filePath = `${fileDir}/${user.id}.json`
 
         const profile: Profile = (fs.existsSync(filePath)) ?
             (JSON.parse(fs.readFileSync(filePath, 'utf8')))
@@ -26,12 +21,14 @@ export const queue: RecbotCommand = {
             timesRecPicked: 0,
             lastRecPickedDate: null
         }
-        profile.recs.push(recommendation)
         // update user's displayName in case they've changed it
         profile.displayName = user.displayName
+        if (!fs.existsSync(fileDir)){
+            fs.mkdirSync(fileDir, { recursive: true });
+        }
         fs.writeFileSync(filePath, JSON.stringify(profile), 'utf8')
 
-        await interaction.reply(`${user.displayName} recommended ${recommendation}`)
+        await interaction.reply(`${user.displayName}'s rec queue: ${profile.recs}`)
     }
 }
 

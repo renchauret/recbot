@@ -15,7 +15,8 @@ export const rec: RecbotCommand = {
     execute: async (interaction: ChatInputCommandInteraction) => {
         const user = interaction.user
         const recommendation = interaction.options.getString('recommendation')
-        const filePath = `../db/${interaction.guildId}/${user.id}.json`
+        const fileDir = `../db/${interaction.guildId}`
+        const filePath = `${fileDir}/${user.id}.json`
 
         const profile: Profile = (fs.existsSync(filePath)) ?
             (JSON.parse(fs.readFileSync(filePath, 'utf8')))
@@ -29,6 +30,9 @@ export const rec: RecbotCommand = {
         profile.recs.push(recommendation)
         // update user's displayName in case they've changed it
         profile.displayName = user.displayName
+        if (!fs.existsSync(fileDir)){
+            fs.mkdirSync(fileDir, { recursive: true });
+        }
         fs.writeFileSync(filePath, JSON.stringify(profile), 'utf8')
 
         await interaction.reply(`${user.displayName} recommended ${recommendation}`)
