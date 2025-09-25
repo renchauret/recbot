@@ -13,7 +13,7 @@ export const recCommand: RecbotCommand = {
         ),
     execute: async (interaction: ChatInputCommandInteraction) => {
         const user = interaction.user.displayName
-        const text = interaction.options.getString('link')
+        const text = interaction.options.getString('recommendation')
 
         // TODO:  save rec to queue
         // fs.writeFile('media/' + videoCount + '-tts.txt', text, function (err) {
