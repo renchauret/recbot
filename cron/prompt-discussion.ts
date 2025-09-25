@@ -19,6 +19,10 @@ const promptDiscussion = async (guildId: string) => {
     }
 
     const latestPickedRec = getMostRecentPickedRec(guildId)
+    if (!latestPickedRec) {
+        console.error("No latest picked rec to discuss")
+        return
+    }
 
     // todo random message
     await channel.send(`How was ${latestPickedRec.name}?`)
