@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
 
-import type { RecbotCommand } from './commands.js'
+import type { RecbotCommand } from '../commands.js'
 
 export const ping: RecbotCommand = {
     data: new SlashCommandBuilder()

@@ -1,13 +1,13 @@
 import { SharedSlashCommand } from '@discordjs/builders'
 import { ChatInputCommandInteraction } from 'discord.js'
-import { ping } from './ping.ts'
-import { rec } from './rec.ts'
-import { recq } from './recq.ts'
-import { recd } from './recd.ts'
-import { recswap } from './recswap.ts'
-import { recmove } from './recmove.ts'
-import { recclear } from './recclear.ts'
-import { test } from './test.ts'
+import { ping } from './commands/ping.ts'
+import { rec } from './commands/rec.ts'
+import { recq } from './commands/recq.ts'
+import { recd } from './commands/recd.ts'
+import { recswap } from './commands/recswap.ts'
+import { recmove } from './commands/recmove.ts'
+import { recclear } from './commands/recclear.ts'
+import { test } from './commands/test.ts'
 
 export type RecbotCommand = {
     data: SharedSlashCommand,

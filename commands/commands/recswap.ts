@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
-import type { RecbotCommand } from './commands.ts'
-import type { Profile } from '../models/profile.ts'
-import { getOrCreateProfile, saveProfile } from '../db/utils.ts'
+import type { RecbotCommand } from '../commands.ts'
+import type { Profile } from '../../models/profile.ts'
+import { getOrCreateProfile, saveProfile } from '../../db/utils.ts'
 
 export const recswap: RecbotCommand = {
     data: new SlashCommandBuilder()

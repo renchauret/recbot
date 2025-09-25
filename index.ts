@@ -3,6 +3,7 @@ import { configDotenv } from 'dotenv'
 import { commands } from './commands/commands.ts'
 import { getAllProfiles, saveProfile } from './db/utils.ts'
 import { randomInt } from 'node:crypto'
+import { CronJob } from 'cron'
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] })
 
@@ -72,3 +73,10 @@ if (process.env.token) {
 } else {
     console.log('Could not find token environment variable. Please supply it via command line using the --env-file flag.')
 }
+
+const pickRecJob = CronJob.from({
+    cronTime: '0 * * * * *',
+    onTick: () => console.log('new minute'),
+    start: true,
+    timeZone: 'America/New_York'
+})
