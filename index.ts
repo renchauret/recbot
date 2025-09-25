@@ -1,7 +1,8 @@
 import { Client, Events, GatewayIntentBits, GuildScheduledEventStatus, MessageFlags } from 'discord.js'
 import { configDotenv } from 'dotenv'
 import { commands } from './commands/commands.ts'
-import fs from 'fs'
+import { getAllProfiles, saveProfile } from './db/utils.ts'
+import { randomInt } from 'node:crypto'
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] })
 
@@ -32,6 +33,7 @@ client.on(Events.InteractionCreate, async interaction => {
 })
 
 client.on(Events.GuildScheduledEventUpdate, async (oldScheduledEvent, newScheduledEvent) => {
+    console.log(newScheduledEvent)
     if (newScheduledEvent.name !== 'pick rec') {
         return
     }
@@ -39,10 +41,15 @@ client.on(Events.GuildScheduledEventUpdate, async (oldScheduledEvent, newSchedul
     if (oldScheduledEvent.status !== GuildScheduledEventStatus.Active && newScheduledEvent.status === GuildScheduledEventStatus.Active) {
         console.log(`Scheduled event "${newScheduledEvent.name}" has started!`);
     }
-    const fileDir = `../db/${newScheduledEvent.guildId}`
-    if (!fs.existsSync(fileDir)){
-        fs.mkdirSync(fileDir, { recursive: true });
-    }
+    const profiles = getAllProfiles(newScheduledEvent.guildId)
+    const pickedProfile = profiles[randomInt(0, profiles.length)]
+    const pickedRec= pickedProfile.recs.splice(0, 1)[0]
+    pickedProfile.pickedRecs.push({
+        name: pickedRec,
+        pickedDate: Date.now()
+    })
+    saveProfile(newScheduledEvent.guildId, pickedProfile)
+    await newScheduledEvent.channel.send(`Our new recommendation is ${pickedRec} from ${pickedProfile.displayName}!`)
 })
 
 client.on('messageCreate', receivedMessage => {

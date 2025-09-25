@@ -2,8 +2,17 @@ import type { Profile } from '../models/profile.ts'
 import fs from 'fs'
 
 const getGuildDbPath = (guildId: string) => `./db/guilds/${guildId}`
+const getProfilesDbPath = (guidId: string) => `${getOrCreateGuildDb(guidId)}/profiles`
 const getProfileDbPath = (guildId: string, profileId: string) => {
-    return `${getOrCreateGuildDb(guildId)}/${profileId}.json`
+    return `${getOrCreateProfilesDb(guildId)}/${profileId}.json`
+}
+
+const getOrCreateProfilesDb = (guildId: string): string => {
+    const fileDir = getProfilesDbPath(guildId)
+    if (!fs.existsSync(fileDir)){
+        fs.mkdirSync(fileDir, { recursive: true });
+    }
+    return fileDir
 }
 
 const getOrCreateGuildDb = (guildId: string): string => {
@@ -40,10 +49,9 @@ export const getOrCreateProfile = (guildId: string, profileId: string, displayNa
 }
 
 export const getAllProfiles = (guildId: string): Profile[] => {
-    getOrCreateGuildDb(guildId)
     const profiles = []
     try {
-        const files = fs.readdirSync(getOrCreateGuildDb(guildId));
+        const files = fs.readdirSync(getOrCreateProfilesDb(guildId));
 
         files.forEach(file => {
             console.log(file)
