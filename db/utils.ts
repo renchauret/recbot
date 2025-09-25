@@ -1,6 +1,7 @@
 import type { Profile } from '../models/profile.ts'
 import fs from 'fs'
 import type { Guild } from '../models/guild.js'
+import type { PickedRec } from '../models/picked-rec.js'
 
 const GUILDS_DIR = './db/guilds'
 const getProfilesDirPath = (guidId: string) => `${getOrCreateGuildDirPath(guidId)}/profiles`
@@ -79,3 +80,10 @@ const getGuild = (guildId: string): Guild | null => {
 }
 
 export const getPreferredChannelId = (guildId: string): string | null => getGuild(guildId)?.preferredChannelId
+export const getMostRecentPickedRec = (guildId: string): PickedRec | null => {
+    const pickedRecs = getGuild(guildId)?.pickedRecs
+    if (pickedRecs === null || pickedRecs.length === 0) {
+        return null
+    }
+    return pickedRecs[pickedRecs.length - 1]
+}

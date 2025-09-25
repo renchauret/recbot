@@ -2,6 +2,7 @@ import { Client, Events, GatewayIntentBits, MessageFlags } from 'discord.js'
 import { configDotenv } from 'dotenv'
 import { commands } from './commands/commands.ts'
 import { startPickRecJob } from './cron/pick-rec.ts'
+import { startPromptDiscussionJob } from './cron/prompt-discussion.ts'
 
 export const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] })
 
@@ -53,3 +54,4 @@ if (process.env.token) {
 }
 
 startPickRecJob()
+startPromptDiscussionJob()
