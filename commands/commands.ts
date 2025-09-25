@@ -6,6 +6,7 @@ import { recq } from './recq.ts'
 import { recd } from './recd.ts'
 import { recswap } from './recswap.ts'
 import { recmove } from './recmove.ts'
+import { recclear } from './recclear.ts'
 
 export type RecbotCommand = {
     data: SharedSlashCommand,
@@ -19,5 +20,6 @@ export const commands: Map<string, RecbotCommand> = new Map([
     [recd.data.name, recd],
     [recq.data.name, recq],
     [recswap.data.name, recswap],
+    [recclear.data.name, recclear],
     [recmove.data.name, recmove]
 ])
