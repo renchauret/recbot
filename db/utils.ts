@@ -11,7 +11,8 @@ const getOrCreateGuildDirPath = (guildId: string): string => {
     if (!fs.existsSync(guildDirPath)){
         fs.mkdirSync(`${guildDirPath}/profiles`, { recursive: true });
         const guild: Guild = {
-            preferredChannelId: null
+            preferredChannelId: null,
+            pickedRecs: []
         }
         fs.writeFileSync(`${guildDirPath}/guild.json`, JSON.stringify(guild), 'utf8')
     }
@@ -62,15 +63,19 @@ export const getAllGuildIds = (): string[] => fs.readdirSync(GUILDS_DIR)
 
 export const initGuild = (guildId: string, preferredChannelId: string) => {
     const guildDirPath = getOrCreateGuildDirPath(guildId)
-    const guild: Guild = {
-        preferredChannelId: preferredChannelId
+    const guild: Guild = getGuild(guildId) ?? {
+        preferredChannelId: preferredChannelId,
+        pickedRecs: []
     }
+    guild.preferredChannelId = preferredChannelId
     fs.writeFileSync(`${guildDirPath}/guild.json`, JSON.stringify(guild), 'utf8')
 }
 
-export const getPreferredChannelId = (guildId: string): string | null => {
+const getGuild = (guildId: string): Guild | null => {
     const guildFilePath = getGuildFilePath(guildId)
     return (fs.existsSync(guildFilePath)) ?
-        (JSON.parse(fs.readFileSync(guildFilePath, 'utf8'))).preferredChannelId
+        (JSON.parse(fs.readFileSync(guildFilePath, 'utf8')))
         : null
 }
+
+export const getPreferredChannelId = (guildId: string): string | null => getGuild(guildId)?.preferredChannelId

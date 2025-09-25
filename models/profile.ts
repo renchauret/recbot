@@ -1,7 +1,4 @@
-export type PickedRec = {
-    name: string,
-    pickedDate: number
-}
+import type { PickedRec } from './pickedRec.ts'
 
 export type Profile = {
     id: string,
