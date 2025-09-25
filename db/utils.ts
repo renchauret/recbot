@@ -1,7 +1,7 @@
 import type { Profile } from '../models/profile.ts'
 import fs from 'fs'
 
-const getGuildDbPath = (guildId: string) => `./db/${guildId}`
+const getGuildDbPath = (guildId: string) => `./db/guilds/${guildId}`
 const getProfileDbPath = (guildId: string, profileId: string) => {
     createGuildDbIfNotExist(guildId)
     return `${getGuildDbPath(guildId)}/${profileId}.json`
@@ -21,7 +21,7 @@ const getProfile = (guildId: string, profileId: string): Profile | null => {
         : null
 }
 
-const saveProfile = (guildId: string, profile: Profile) => {
+export const saveProfile = (guildId: string, profile: Profile) => {
     const filePath = getProfileDbPath(guildId, profile.id)
     fs.writeFileSync(filePath, JSON.stringify(profile), 'utf8')
 }

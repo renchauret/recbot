@@ -5,7 +5,7 @@ import { getOrCreateProfile } from '../db/utils.ts'
 
 export const recQ: RecbotCommand = {
     data: new SlashCommandBuilder()
-        .setName('recQ')
+        .setName('recq')
         .setDescription('Shows you your rec queue.'),
     execute: async (interaction: ChatInputCommandInteraction) => {
         const user = interaction.user

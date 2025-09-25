@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
 import type { RecbotCommand } from './commands.ts'
 import type { Profile } from '../models/profile.ts'
-import { getOrCreateProfile } from '../db/utils.ts'
+import { getOrCreateProfile, saveProfile } from '../db/utils.ts'
 
 export const rec: RecbotCommand = {
     data: new SlashCommandBuilder()
@@ -17,6 +17,7 @@ export const rec: RecbotCommand = {
         const recommendation = interaction.options.getString('recommendation')
         const profile: Profile = getOrCreateProfile(interaction.guildId, user.id, user.displayName)
         profile.recs.push(recommendation)
+        saveProfile(interaction.guildId, profile)
         await interaction.reply(`${user.displayName} recommended ${recommendation}`)
     }
 }
