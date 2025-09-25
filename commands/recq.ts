@@ -13,4 +13,3 @@ export const recq: RecbotCommand = {
         await interaction.reply(`${user.displayName}'s rec queue: ${profile.recs}`)
     }
 }
-
