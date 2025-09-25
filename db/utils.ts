@@ -11,7 +11,7 @@ const getOrCreateGuildDirPath = (guildId: string): string => {
     if (!fs.existsSync(guildDirPath)){
         fs.mkdirSync(`${guildDirPath}/profiles`, { recursive: true });
         const guild: Guild = {
-            preferredChannelId: ''
+            preferredChannelId: null
         }
         fs.writeFileSync(`${guildDirPath}/guild.json`, JSON.stringify(guild), 'utf8')
     }

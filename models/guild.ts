@@ -1,3 +1,3 @@
 export type Guild = {
-    preferredChannelId: string
+    preferredChannelId: string | null
 }
