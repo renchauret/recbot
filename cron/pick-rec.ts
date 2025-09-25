@@ -15,7 +15,11 @@ const pickRec = async (guildId: string) => {
         return
     }
 
-    const profiles = getAllProfiles(guildId)
+    const profiles = getAllProfiles(guildId).filter(profile => profile.recs.length > 0)
+    if (!profiles) {
+        console.error('No recs to choose from')
+        return
+    }
     const pickedProfile = profiles[randomInt(0, profiles.length)]
     const pickedRec = savePicRec(guildId, pickedProfile)
 
