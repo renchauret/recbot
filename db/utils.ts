@@ -109,5 +109,6 @@ export const savePicRec = (guildId: string, profile: Profile): PickedRec => {
         pickedRecs: []
     }
     guild.pickedRecs.push(pickedRec)
+    saveGuild(guild)
     return pickedRec
 }
