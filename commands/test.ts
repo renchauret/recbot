@@ -10,9 +10,14 @@ export const test: RecbotCommand = {
         .setDescription('temp'),
     execute: async (interaction: ChatInputCommandInteraction) => {
         const profiles = getAllProfiles(interaction.guildId)
-        const pickedProfileIndex = randomInt(0, profiles.length)
-        console.log(profiles)
-        await interaction.reply('done')
+        const pickedProfile = profiles[randomInt(0, profiles.length)]
+        const pickedRec= pickedProfile.recs.splice(0, 1)[0]
+        pickedProfile.pickedRecs.push({
+            name: pickedRec,
+            pickedDate: Date.now()
+        })
+        saveProfile(interaction.guildId, pickedProfile)
+        await interaction.reply(`Our new recommendation is ${pickedRec} from ${pickedProfile.displayName}!`)
     }
 }
 
