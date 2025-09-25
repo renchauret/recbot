@@ -4,6 +4,7 @@ import { ping } from './ping.ts'
 import { rec } from './rec.ts'
 import { recq } from './recq.ts'
 import { recd } from './recd.ts'
+import { recswap } from './recswap.ts'
 
 export type RecbotCommand = {
     data: SharedSlashCommand,
@@ -15,5 +16,6 @@ export const commands: Map<string, RecbotCommand> = new Map([
     [ping.data.name, ping],
     [rec.data.name, rec],
     [recd.data.name, recd],
-    [recq.data.name, recq]
+    [recq.data.name, recq],
+    [recswap.data.name, recswap]
 ])

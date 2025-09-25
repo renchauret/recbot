@@ -15,7 +15,6 @@ export const recd: RecbotCommand = {
     execute: async (interaction: ChatInputCommandInteraction) => {
         const user = interaction.user
         const indexToDelete = interaction.options.getNumber('index')
-        console.log(indexToDelete)
         const profile: Profile = getOrCreateProfile(interaction.guildId, user.id, user.displayName)
         const recToDelete = profile.recs[indexToDelete]
         profile.recs.splice(indexToDelete, 1)
