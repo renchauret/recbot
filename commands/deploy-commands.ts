@@ -1,7 +1,7 @@
 import { REST } from '@discordjs/rest'
 import { Routes } from 'discord-api-types/v10'
 import { configDotenv } from 'dotenv'
-import { commands } from './commands/commands.ts'
+import { commands } from './commands.ts'
 
 configDotenv()
 const rest = new REST().setToken(process.env.token)
@@ -12,11 +12,12 @@ const deployCommands = async () => {
         console.log(`Started refreshing ${jsonCommands.length} application (/) commands.`)
 
         // The put method is used to fully refresh all commands in all guilds this bot is in
-        await rest.put(
+        const response = await rest.put(
             Routes.applicationCommands(process.env.clientId),
             { body: jsonCommands },
         )
 
+        console.log(response)
         console.log(`Successfully reloaded ${jsonCommands.length} application (/) commands.`)
     } catch (error) {
         // And of course, make sure you catch and log any errors!

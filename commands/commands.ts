@@ -1,10 +1,10 @@
-import { SlashCommandBuilder } from '@discordjs/builders'
+import { SharedSlashCommand } from '@discordjs/builders'
 import { ChatInputCommandInteraction } from 'discord.js'
 import { pingCommand } from './ping.ts'
 import { recCommand } from './rec.ts'
 
 export type RecbotCommand = {
-    data: SlashCommandBuilder,
+    data: SharedSlashCommand,
     execute: (interaction: ChatInputCommandInteraction) => Promise<void>
 }
 
