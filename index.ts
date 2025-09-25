@@ -1,6 +1,7 @@
-import { Client, Events, GatewayIntentBits, MessageFlags } from 'discord.js'
+import { Client, Events, GatewayIntentBits, GuildScheduledEventStatus, MessageFlags } from 'discord.js'
 import { configDotenv } from 'dotenv'
 import { commands } from './commands/commands.ts'
+import fs from 'fs'
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] })
 
@@ -27,6 +28,17 @@ client.on(Events.InteractionCreate, async interaction => {
         } else {
             await interaction.reply({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
         }
+    }
+})
+
+client.on(Events.GuildScheduledEventUpdate, async (oldScheduledEvent, newScheduledEvent) => {
+    // Check if the event status changed to ACTIVE (started)
+    if (oldScheduledEvent.status !== GuildScheduledEventStatus.Active && newScheduledEvent.status === GuildScheduledEventStatus.Active) {
+        console.log(`Scheduled event "${newScheduledEvent.name}" has started!`);
+    }
+    const fileDir = `../db/${newScheduledEvent.guildId}`
+    if (!fs.existsSync(fileDir)){
+        fs.mkdirSync(fileDir, { recursive: true });
     }
 })
 
