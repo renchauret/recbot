@@ -3,7 +3,7 @@ import type { RecbotCommand } from './commands.ts'
 import type { Profile } from '../models/profile.ts'
 import { getOrCreateProfile } from '../db/utils.ts'
 
-export const recQ: RecbotCommand = {
+export const recq: RecbotCommand = {
     data: new SlashCommandBuilder()
         .setName('recq')
         .setDescription('Shows you your rec queue.'),
