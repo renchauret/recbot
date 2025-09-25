@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
-import type { RecbotCommand } from '../index.ts'
+
+import type { RecbotCommand } from './commands.js'
 
 export const recCommand: RecbotCommand = {
     data: new SlashCommandBuilder()
@@ -12,5 +13,15 @@ export const recCommand: RecbotCommand = {
         // ),
     execute: async (interaction: ChatInputCommandInteraction) => {
         await interaction.reply('Pong!');
+        // const text = interaction.options.getString('link')
+
+        // TODO:  save rec to queue
+
+        // fs.writeFile('media/' + videoCount + '-tts.txt', text, function (err) {
+        //     if (err) return console.log(err)
+        //     console.log("Couldn't write TTS file.")
+        // })
+
+        // await interaction.reply('test')
     }
 }
