@@ -10,6 +10,7 @@ export const recq: RecbotCommand = {
     execute: async (interaction: ChatInputCommandInteraction) => {
         const user = interaction.user
         const profile: Profile = getOrCreateProfile(interaction.guildId, user.id, user.displayName)
-        await interaction.reply(`${user.displayName}'s rec queue: ${profile.recs}`)
+        const formattedRecs = profile.recs.map(((rec, index) => `${index + 1}. ${rec}`)).join('\n')
+        await interaction.reply(`${user.displayName}'s rec queue:\n${formattedRecs}`)
     }
 }
