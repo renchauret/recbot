@@ -57,7 +57,6 @@ export const getAllProfiles = (guildId: string): Profile[] => {
         const files = fs.readdirSync(getProfilesDirPath(guildId));
 
         files.forEach(file => {
-            console.log(file)
             profiles.push(getProfile(guildId, file.split('.')[0]))
         })
     } catch (err) {
