@@ -30,11 +30,16 @@ const promptDiscussions = async () => {
 }
 
 export const startPromptDiscussionJob = () => {
+    const cron = getConfig().promptDiscussionCron
     CronJob.from({
-        cronTime: getConfig().promptDiscussionCron,
+        cronTime: cron,
         onTick: promptDiscussions,
         start: true,
         timeZone: 'America/New_York'
     })
-    console.log('started promptdiscussion job')
+    console.log(`started promptdiscussion job with cronTime ${cron}`)
 }
+
+const messageOptions = [
+
+]

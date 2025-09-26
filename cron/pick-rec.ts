@@ -32,11 +32,12 @@ const pickRecs = async () => {
 }
 
 export const startPickRecJob = () => {
+    const cron = getConfig().pickRecCron
     CronJob.from({
-        cronTime: getConfig().pickRecCron,
+        cronTime: cron,
         onTick: pickRecs,
         start: true,
         timeZone: 'America/New_York'
     })
-    console.log('started pickrec job')
+    console.log(`started pickrec job with cronTime ${cron}`)
 }
