@@ -1,10 +1,10 @@
 import { CronJob } from 'cron'
 import { getConfig } from '../config/config.ts'
 import { getChannel } from '../discord/discord-client.ts'
-import { getAllGuildIds, getGuild, getMostRecentPickedRec } from '../db/db.ts'
+import { getAllGuildIds, getOrCreateGuild, getMostRecentPickedRec } from '../db/db.ts'
 
 const promptDiscussion = async (guildId: string) => {
-    const preferredChannelId = (await getGuild(guildId))?.preferredChannelId
+    const preferredChannelId = (await getOrCreateGuild(guildId))?.preferredChannelId
     if (preferredChannelId === null) {
         console.error("Can't prompt discussion with no preferred channel. Run /init command")
         return

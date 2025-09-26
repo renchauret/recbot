@@ -2,10 +2,10 @@ import { randomInt } from 'node:crypto'
 import { CronJob } from 'cron'
 import { getConfig } from '../config/config.ts'
 import { getChannel } from '../discord/discord-client.ts'
-import { getAllGuildIds, getGuild, getProfiles, savePickRec } from '../db/db.ts'
+import { getAllGuildIds, getOrCreateGuild, getProfiles, savePickRec } from '../db/db.ts'
 
 const pickRec = async (guildId: string) => {
-    const preferredChannelId = (await getGuild(guildId))?.preferredChannelId
+    const preferredChannelId = (await getOrCreateGuild(guildId))?.preferredChannelId
     if (preferredChannelId === null) {
         console.error("Can't pick a rec with no preferred channel. Run /init command")
         return

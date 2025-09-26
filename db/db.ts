@@ -21,7 +21,7 @@ const runWithMongoClient = async <T> (toRun: (client: MongoClient) => T): Promis
     try {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
-        return toRun(client)
+        return await toRun(client)
     } catch (e) {
         console.error(e)
     } finally {
@@ -39,8 +39,7 @@ export const createGuildOrUpdatePreferredChannel = async (guildId: string, prefe
     await runWithCollection(GUILDS_COLLECTION, async (collection: Collection) => {
         const oldGuild = await collection.findOne({ id: guildId })
         if (oldGuild) {
-            oldGuild.preferredChannelId = preferredChannelId
-            await collection.insertOne(oldGuild)
+            await collection.updateOne(oldGuild, { $set: { preferredChannelId: preferredChannelId }})
         } else {
             const guild: Guild = {
                 id: guildId,
@@ -51,13 +50,24 @@ export const createGuildOrUpdatePreferredChannel = async (guildId: string, prefe
         }
     })
 
-export const getGuild = async (guildId: string): Promise<Guild | null> =>
-    runWithCollection(GUILDS_COLLECTION, async (collection: Collection) =>
-        await collection.findOne({ id: guildId })
-    )
+export const getOrCreateGuild = async (guildId: string): Promise<Guild> =>
+    await runWithCollection(GUILDS_COLLECTION, async (collection: Collection) => {
+        const oldGuild = await collection.findOne({ id: guildId })
+        if (oldGuild) {
+            return oldGuild
+        } else {
+            const guild: Guild = {
+                id: guildId,
+                preferredChannelId: null,
+                pickedRecs: []
+            }
+            await collection.insertOne(guild)
+            return guild
+        }
+    })
 
 export const getMostRecentPickedRec = async (guildId: string): Promise<PickedRec | null> => {
-    const pickedRecs = (await getGuild(guildId))?.pickedRecs
+    const pickedRecs = (await getOrCreateGuild(guildId))?.pickedRecs
     if (pickedRecs === null || pickedRecs === undefined || pickedRecs.length === 0) {
         return null
     }
@@ -73,8 +83,7 @@ export const createProfileOrUpdateDisplayName = async (guildId: string, profileI
     runWithCollection(PROFILES_COLLECTION, async (collection: Collection) => {
         const oldProfile = await collection.findOne({ id: profileId, guildId: guildId })
         if (oldProfile) {
-            oldProfile.displayName = displayName
-            await collection.insertOne(oldProfile)
+            await collection.updateOne(oldProfile, { $set: { displayName: displayName }})
             return oldProfile
         } else {
             const newProfile: Profile = {
@@ -117,14 +126,10 @@ export const savePickRec = async (guildId: string, profile: Profile): Promise<Pi
             }
         })
     )
-    const guild = await getGuild(guildId) ?? {
-        id: guildId,
-        preferredChannelId: null,
-        pickedRecs: []
-    }
+    const guild = await getOrCreateGuild(guildId)
     guild.pickedRecs.push(pickedRec)
     await runWithCollection(GUILDS_COLLECTION, async (collection: Collection) => {
-        await collection.insertOne(guild)
+        await collection.updateOne({ id: guild.id }, { $set: { pickedRecs: guild.pickedRecs }})
     })
     return pickedRec
 }
@@ -136,6 +141,7 @@ export const modifyRecs = async (
     modRecs: (recs: string[]) => string[]
 ) => {
     const profile: Profile = await createProfileOrUpdateDisplayName(guildId, profileId, displayName)
+    console.log(profile)
     const recs = modRecs(profile.recs)
     await saveRecsToProfile(guildId, profileId, recs)
 }
