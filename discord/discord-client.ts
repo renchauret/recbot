@@ -31,8 +31,6 @@ export const initDiscordClient = () => {
     })
 
     client.on('messageCreate', receivedMessage => {
-        console.log(`received message`)
-
         // Prevent bot from responding to its own messages
         if (receivedMessage.author == client.user) {
             return
