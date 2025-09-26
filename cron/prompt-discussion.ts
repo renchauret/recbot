@@ -1,14 +1,10 @@
-import {
-    getAllGuildIds,
-    getMostRecentPickedRec,
-    getPreferredChannelId,
-} from '../db/utils.ts'
 import { CronJob } from 'cron'
 import { getConfig } from '../config/config.ts'
 import { getChannel } from '../discord/discord-client.ts'
+import { getAllGuildIds, getGuild, getMostRecentPickedRec } from '../db/db.ts'
 
 const promptDiscussion = async (guildId: string) => {
-    const preferredChannelId = getPreferredChannelId(guildId)
+    const preferredChannelId = (await getGuild(guildId))?.preferredChannelId
     if (preferredChannelId === null) {
         console.error("Can't prompt discussion with no preferred channel. Run /init command")
         return
@@ -19,7 +15,7 @@ const promptDiscussion = async (guildId: string) => {
         return
     }
 
-    const latestPickedRec = getMostRecentPickedRec(guildId)
+    const latestPickedRec = await getMostRecentPickedRec(guildId)
     if (!latestPickedRec) {
         console.error("No latest picked rec to discuss")
         return
@@ -29,8 +25,8 @@ const promptDiscussion = async (guildId: string) => {
     await channel.send(`How was ${latestPickedRec.name}?`)
 }
 
-const promptDiscussions = () => {
-    getAllGuildIds().forEach(guildId => promptDiscussion(guildId))
+const promptDiscussions = async () => {
+    (await getAllGuildIds()).forEach(guildId => promptDiscussion(guildId))
 }
 
 export const startPromptDiscussionJob = () => {

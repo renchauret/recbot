@@ -1,11 +1,11 @@
-import { getAllGuildIds, getAllProfiles, getPreferredChannelId, savePicRec, saveProfile } from '../db/utils.ts'
 import { randomInt } from 'node:crypto'
 import { CronJob } from 'cron'
 import { getConfig } from '../config/config.ts'
 import { getChannel } from '../discord/discord-client.ts'
+import { getAllGuildIds, getGuild, getProfiles, savePickRec } from '../db/db.ts'
 
 const pickRec = async (guildId: string) => {
-    const preferredChannelId = getPreferredChannelId(guildId)
+    const preferredChannelId = (await getGuild(guildId))?.preferredChannelId
     if (preferredChannelId === null) {
         console.error("Can't pick a rec with no preferred channel. Run /init command")
         return
@@ -16,19 +16,19 @@ const pickRec = async (guildId: string) => {
         return
     }
 
-    const profiles = getAllProfiles(guildId).filter(profile => profile.recs.length > 0)
+    const profiles = (await getProfiles(guildId)).filter(profile => profile.recs.length > 0)
     if (!profiles || profiles.length === 0) {
         console.error('No recs to choose from')
         return
     }
     const pickedProfile = profiles[randomInt(0, profiles.length)]
-    const pickedRec = savePicRec(guildId, pickedProfile)
+    const pickedRec = await savePickRec(guildId, pickedProfile)
 
     await channel.send(`Our new recommendation is ${pickedRec.name} from ${pickedProfile.displayName}!`)
 }
 
-const pickRecs = () => {
-    getAllGuildIds().forEach(guildId => pickRec(guildId))
+const pickRecs = async () => {
+    (await getAllGuildIds()).forEach(guildId => pickRec(guildId))
 }
 
 export const startPickRecJob = () => {

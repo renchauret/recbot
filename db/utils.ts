@@ -66,8 +66,6 @@ export const getAllProfiles = (guildId: string): Profile[] => {
     return profiles
 }
 
-export const getAllGuildIds = (): string[] => fs.readdirSync(GUILDS_DIR)
-
 export const initGuild = (guildId: string, preferredChannelId: string) => {
     const guildDirPath = getOrCreateGuildDirPath(guildId)
     const guild: Guild = getGuild(guildId) ?? {
@@ -84,31 +82,4 @@ const getGuild = (guildId: string): Guild | null => {
     return (fs.existsSync(guildFilePath)) ?
         (JSON.parse(fs.readFileSync(guildFilePath, 'utf8')))
         : null
-}
-
-export const getPreferredChannelId = (guildId: string): string | null => getGuild(guildId)?.preferredChannelId
-export const getMostRecentPickedRec = (guildId: string): PickedRec | null => {
-    const pickedRecs = getGuild(guildId)?.pickedRecs
-    if (pickedRecs === null || pickedRecs === undefined || pickedRecs.length === 0) {
-        return null
-    }
-    return pickedRecs[pickedRecs.length - 1]
-}
-
-export const savePicRec = (guildId: string, profile: Profile): PickedRec => {
-    const pickedRecName = profile.recs.splice(0, 1)[0]
-    const pickedRec = {
-        name: pickedRecName,
-        pickedDate: Date.now()
-    }
-    profile.pickedRecs.push()
-    saveProfile(guildId, profile)
-    const guild = getGuild(guildId) ?? {
-        id: guildId,
-        preferredChannelId: null,
-        pickedRecs: []
-    }
-    guild.pickedRecs.push(pickedRec)
-    saveGuild(guild)
-    return pickedRec
 }
