@@ -5,6 +5,7 @@ import {
 } from '../db/utils.ts'
 import { client } from '../index.ts'
 import { CronJob } from 'cron'
+import { getConfig } from '../config/config.js'
 
 const promptDiscussion = async (guildId: string) => {
     const preferredChannelId = getPreferredChannelId(guildId)
@@ -34,7 +35,7 @@ const promptDiscussions = () => {
 
 export const startPromptDiscussionJob = () => {
     CronJob.from({
-        cronTime: '30 * * * * *',
+        cronTime: getConfig().promptDiscussionCron,
         onTick: promptDiscussions,
         start: true,
         timeZone: 'America/New_York'

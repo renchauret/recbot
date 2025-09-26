@@ -2,6 +2,7 @@ import { getAllGuildIds, getAllProfiles, getPreferredChannelId, savePicRec, save
 import { randomInt } from 'node:crypto'
 import { client } from '../index.ts'
 import { CronJob } from 'cron'
+import { getConfig } from '../config/config.js'
 
 const pickRec = async (guildId: string) => {
     const preferredChannelId = getPreferredChannelId(guildId)
@@ -32,7 +33,7 @@ const pickRecs = () => {
 
 export const startPickRecJob = () => {
     CronJob.from({
-        cronTime: '0 * * * * *',
+        cronTime: getConfig().pickRecCron,
         onTick: pickRecs,
         start: true,
         timeZone: 'America/New_York'
