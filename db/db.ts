@@ -140,8 +140,11 @@ export const modifyRecs = async (
     displayName: string,
     modRecs: (recs: string[]) => string[]
 ) => {
-    const profile: Profile = await createProfileOrUpdateDisplayName(guildId, profileId, displayName)
-    console.log(profile)
-    const recs = modRecs(profile.recs)
-    await saveRecsToProfile(guildId, profileId, recs)
+    try {
+        const profile: Profile = await createProfileOrUpdateDisplayName(guildId, profileId, displayName)
+        const recs = modRecs(profile.recs)
+        await saveRecsToProfile(guildId, profileId, recs)
+    } catch (e) {
+        console.error(`Failed to modify recs for user ${profileId} in guild ${guildId}: ${e}`)
+    }
 }
