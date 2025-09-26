@@ -65,21 +65,3 @@ export const getAllProfiles = (guildId: string): Profile[] => {
     }
     return profiles
 }
-
-export const initGuild = (guildId: string, preferredChannelId: string) => {
-    const guildDirPath = getOrCreateGuildDirPath(guildId)
-    const guild: Guild = getGuild(guildId) ?? {
-        id: guildId,
-        preferredChannelId: preferredChannelId,
-        pickedRecs: []
-    }
-    guild.preferredChannelId = preferredChannelId
-    fs.writeFileSync(`${guildDirPath}/guild.json`, JSON.stringify(guild), 'utf8')
-}
-
-const getGuild = (guildId: string): Guild | null => {
-    const guildFilePath = getGuildFilePath(guildId)
-    return (fs.existsSync(guildFilePath)) ?
-        (JSON.parse(fs.readFileSync(guildFilePath, 'utf8')))
-        : null
-}

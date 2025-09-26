@@ -36,13 +36,18 @@ const runWithCollection = async <T> (collectionName: string, toRun: (collection:
         toRun(mongoClient.db('recbot').collection(collectionName))
     )
 
-export const createGuildOrUpdatePreferredChannel = async (guild: Guild) =>
+export const createGuildOrUpdatePreferredChannel = async (guildId: string, preferredChannelId: string) =>
     await runWithCollection(GUILDS_COLLECTION, async (collection: Collection) => {
-        const oldGuild = await collection.findOne({ id: guild.id })
+        const oldGuild = await collection.findOne({ id: guildId })
         if (oldGuild) {
-            oldGuild.preferredChannelId = guild.preferredChannelId
+            oldGuild.preferredChannelId = preferredChannelId
             await collection.insertOne(oldGuild)
         } else {
+            const guild: Guild = {
+                id: guildId,
+                preferredChannelId: preferredChannelId,
+                pickedRecs: []
+            }
             await collection.insertOne(guild)
         }
     })
