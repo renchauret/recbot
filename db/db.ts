@@ -2,6 +2,7 @@ import { Collection, MongoClient, ServerApiVersion } from 'mongodb'
 import type { Guild } from '../models/guild.js'
 import type { PickedRec } from '../models/picked-rec.js'
 import type { Profile } from '../models/profile.js'
+import { saveGuild, saveProfile } from './utils.js'
 
 const GUILDS_COLLECTION = 'guilds'
 const PROFILES_COLLECTION = 'profiles'
@@ -91,3 +92,33 @@ export const saveRecsToProfile = async (guildId: string, profileId: string, recs
     runWithCollection(PROFILES_COLLECTION, async (collection: Collection) =>
         await collection.updateOne({ id: profileId, guildId: guildId }, { $set: { recs: recs } })
     )
+
+export const savePickRec = async (guildId: string, profile: Profile): PickedRec => {
+    const pickedRecName = profile.recs.splice(0, 1)[0]
+    const pickedRec = {
+        name: pickedRecName,
+        pickedDate: Date.now()
+    }
+    profile.pickedRecs.push()
+    await runWithCollection(PROFILES_COLLECTION, async (collection: Collection) =>
+        await collection.updateOne({
+            id: profile.id,
+            guildId: guildId
+        }, {
+            $set: {
+                recs: profile.recs,
+                pickedRecs: profile.pickedRecs
+            }
+        })
+    )
+    const guild = await getGuild(guildId) ?? {
+        id: guildId,
+        preferredChannelId: null,
+        pickedRecs: []
+    }
+    guild.pickedRecs.push(pickedRec)
+    await runWithCollection(GUILDS_COLLECTION, async (collection: Collection) => {
+        await collection.insertOne(guild)
+    })
+    return pickedRec
+}
