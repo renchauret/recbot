@@ -9,7 +9,12 @@ export const recq: RecbotCommand = {
         .setDescription('Shows you your rec queue.'),
     execute: async (interaction: ChatInputCommandInteraction) => {
         const user = interaction.user
-        const profile: Profile = await createProfileOrUpdateDisplayName(interaction.guildId, user.id, user.displayName)
+        let profile: Profile
+        try {
+            profile = await createProfileOrUpdateDisplayName(interaction.guildId, user.id, user.displayName)
+        } catch (e) {
+            console.error(`Failed to get recq for user ${user.id} in guid ${interaction.guildId}: ${e}`)
+        }
         const formattedRecs = profile.recs.map(((rec, index) => `${index}: <${rec}>`)).join('\n')
         await interaction.reply(`${user.displayName}'s rec queue:\n${formattedRecs}`)
     }
