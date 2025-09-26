@@ -26,7 +26,11 @@ const promptDiscussion = async (guildId: string) => {
 }
 
 const promptDiscussions = async () => {
-    (await getAllGuildIds()).forEach(guildId => promptDiscussion(guildId))
+    try {
+        (await getAllGuildIds()).forEach(guildId => promptDiscussion(guildId))
+    } catch (e) {
+        console.error(`Failed to prompt discussions: ${e}`)
+    }
 }
 
 export const startPromptDiscussionJob = () => {

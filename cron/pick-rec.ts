@@ -28,7 +28,11 @@ const pickRec = async (guildId: string) => {
 }
 
 const pickRecs = async () => {
-    (await getAllGuildIds()).forEach(guildId => pickRec(guildId))
+    try {
+        (await getAllGuildIds()).forEach(guildId => pickRec(guildId))
+    } catch (e) {
+        console.error(`Failed to pick recs: ${e}`)
+    }
 }
 
 export const startPickRecJob = () => {
