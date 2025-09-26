@@ -2,7 +2,7 @@ import { getAllGuildIds, getAllProfiles, getPreferredChannelId, savePicRec, save
 import { randomInt } from 'node:crypto'
 import { client } from '../index.ts'
 import { CronJob } from 'cron'
-import { getConfig } from '../config/config.js'
+import { getConfig } from '../config/config.ts'
 
 const pickRec = async (guildId: string) => {
     const preferredChannelId = getPreferredChannelId(guildId)
