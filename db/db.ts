@@ -114,7 +114,7 @@ export const savePickRec = async (guildId: string, profile: Profile): Promise<Pi
         name: pickedRecName,
         pickedDate: Date.now()
     }
-    profile.pickedRecs.push()
+    profile.pickedRecs.push(pickedRec)
     await runWithCollection(PROFILES_COLLECTION, async (collection: Collection) =>
         await collection.updateOne({
             id: profile.id,
