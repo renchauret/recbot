@@ -93,7 +93,7 @@ export const saveRecsToProfile = async (guildId: string, profileId: string, recs
         await collection.updateOne({ id: profileId, guildId: guildId }, { $set: { recs: recs } })
     )
 
-export const savePickRec = async (guildId: string, profile: Profile): PickedRec => {
+export const savePickRec = async (guildId: string, profile: Profile): Promise<PickedRec> => {
     const pickedRecName = profile.recs.splice(0, 1)[0]
     const pickedRec = {
         name: pickedRecName,
