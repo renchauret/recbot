@@ -51,17 +51,3 @@ export const getOrCreateProfile = (guildId: string, profileId: string, displayNa
     saveProfile(guildId, profile)
     return profile
 }
-
-export const getAllProfiles = (guildId: string): Profile[] => {
-    const profiles = []
-    try {
-        const files = fs.readdirSync(getProfilesDirPath(guildId));
-
-        files.forEach(file => {
-            profiles.push(getProfile(guildId, file.split('.')[0]))
-        })
-    } catch (err) {
-        console.error('Error reading directory:', err)
-    }
-    return profiles
-}

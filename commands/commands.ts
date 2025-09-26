@@ -7,7 +7,6 @@ import { recd } from './commands/recd.ts'
 import { recswap } from './commands/recswap.ts'
 import { recmove } from './commands/recmove.ts'
 import { recclear } from './commands/recclear.ts'
-import { test } from './commands/test.ts'
 import { recinit } from './commands/recinit.ts'
 
 export type RecbotCommand = {
@@ -24,6 +23,5 @@ export const commands: Map<string, RecbotCommand> = new Map([
     [recswap.data.name, recswap],
     [recclear.data.name, recclear],
     [recmove.data.name, recmove],
-    [recinit.data.name, recinit],
-    [test.data.name, test]
+    [recinit.data.name, recinit]
 ])
