@@ -5,7 +5,7 @@ import { createGuildOrUpdatePreferredChannel } from '../../db/db.ts'
 export const recinit: RecbotCommand = {
     data: new SlashCommandBuilder()
         .setName('recinit')
-        .setDescription('Sends a welcome message and sets this as the preferred channel.'),
+        .setDescription('Sets this as the preferred channel for automated messages.'),
     execute: async (interaction: ChatInputCommandInteraction) => {
         await createGuildOrUpdatePreferredChannel(interaction.guildId, interaction.channelId)
         await interaction.reply(`${interaction.user.displayName} initialized recbot in #${interaction.channel.name}`)
