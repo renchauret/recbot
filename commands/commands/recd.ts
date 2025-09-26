@@ -19,6 +19,6 @@ export const recd: RecbotCommand = {
         const recToDelete = profile.recs[indexToDelete]
         profile.recs.splice(indexToDelete, 1)
         saveProfile(interaction.guildId, profile)
-        await interaction.reply(`${user.displayName} deleted rec ${recToDelete}`)
+        await interaction.reply(`${user.displayName} deleted rec <${recToDelete}>`)
     }
 }

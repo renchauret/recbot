@@ -25,6 +25,6 @@ export const recmove: RecbotCommand = {
         const recToMove = profile.recs[originIndex]
         profile.recs.splice(destinationIndex, 0, profile.recs.splice(originIndex, 1)[0]);
         saveProfile(interaction.guildId, profile)
-        await interaction.reply(`${user.displayName} moved rec ${recToMove} to index ${destinationIndex}`)
+        await interaction.reply(`${user.displayName} moved rec <${recToMove}> to index ${destinationIndex}`)
     }
 }

@@ -27,6 +27,6 @@ export const recswap: RecbotCommand = {
         profile.recs[index1] = rec2ToSwap
         profile.recs[index2] = rec1ToSwap
         saveProfile(interaction.guildId, profile)
-        await interaction.reply(`${user.displayName} swapped recs ${rec1ToSwap} and ${rec2ToSwap}`)
+        await interaction.reply(`${user.displayName} swapped recs <${rec1ToSwap}> and <${rec2ToSwap}>`)
     }
 }

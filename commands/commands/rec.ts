@@ -18,7 +18,7 @@ export const rec: RecbotCommand = {
         const profile: Profile = getOrCreateProfile(interaction.guildId, user.id, user.displayName)
         profile.recs.push(recommendation)
         saveProfile(interaction.guildId, profile)
-        await interaction.reply(`${user.displayName} recommended ${recommendation}`)
+        await interaction.reply(`${user.displayName} recommended <${recommendation}>`)
     }
 }
 
