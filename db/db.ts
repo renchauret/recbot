@@ -1,8 +1,7 @@
 import { Collection, MongoClient, ServerApiVersion } from 'mongodb'
-import type { Guild } from '../models/guild.js'
-import type { PickedRec } from '../models/picked-rec.js'
-import type { Profile } from '../models/profile.js'
-import { saveGuild, saveProfile } from './utils.js'
+import type { Guild } from '../models/guild.ts'
+import type { PickedRec } from '../models/picked-rec.ts'
+import type { Profile } from '../models/profile.ts'
 
 const GUILDS_COLLECTION = 'guilds'
 const PROFILES_COLLECTION = 'profiles'
