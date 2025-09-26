@@ -11,4 +11,3 @@ export const recinit: RecbotCommand = {
         await interaction.reply(`${interaction.user.displayName} initialized recbot in #${interaction.channel.name}`)
     }
 }
-
