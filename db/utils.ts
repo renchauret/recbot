@@ -41,6 +41,7 @@ export const saveGuild = (guild: Guild) => {
 export const getOrCreateProfile = (guildId: string, profileId: string, displayName: string): Profile => {
     const profile: Profile = getProfile(guildId, profileId) ?? {
         id: profileId,
+        guildId: guildId,
         displayName: displayName,
         recs: [],
         pickedRecs: []

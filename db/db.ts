@@ -1,6 +1,7 @@
 import { Collection, MongoClient, ServerApiVersion } from 'mongodb'
 import type { Guild } from '../models/guild.js'
 import type { PickedRec } from '../models/picked-rec.js'
+import type { Profile } from '../models/profile.js'
 
 const GUILDS_COLLECTION = 'guilds'
 const PROFILES_COLLECTION = 'profiles'
@@ -61,4 +62,32 @@ export const getMostRecentPickedRec = async (guildId: string): Promise<PickedRec
 export const getAllGuildIds = async (): Promise<string[]> =>
     runWithCollection(GUILDS_COLLECTION, async (collection: Collection) =>
         (await collection.find().toArray()).map(guild => guild.id)
+    )
+
+export const createProfileOrUpdateDisplayName = async (guildId: string, profileId: string, displayName: string) =>
+    runWithCollection(PROFILES_COLLECTION, async (collection: Collection) => {
+        const oldProfile = await collection.findOne({ id: profileId, guildId: guildId })
+        if (oldProfile) {
+            oldProfile.displayName = displayName
+            await collection.insertOne(oldProfile)
+        } else {
+            const newProfile: Profile = {
+                id: profileId,
+                guildId: guildId,
+                displayName: displayName,
+                recs: [],
+                pickedRecs: []
+            }
+            await collection.insertOne(newProfile)
+        }
+    })
+
+export const getProfiles = async (guildId: string): Promise<Profile[]> =>
+    runWithCollection(PROFILES_COLLECTION, async (collection: Collection) =>
+        (await collection.find({ guildId: guildId }).toArray())
+    )
+
+export const saveRecsToProfile = async (guildId: string, profileId: string, recs: string[])=>
+    runWithCollection(PROFILES_COLLECTION, async (collection: Collection) =>
+        await collection.updateOne({ id: profileId, guildId: guildId }, { $set: { recs: recs } })
     )
