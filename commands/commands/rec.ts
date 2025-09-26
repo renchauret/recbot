@@ -21,4 +21,3 @@ export const rec: RecbotCommand = {
         await interaction.reply(`${user.displayName} recommended <${recommendation}>`)
     }
 }
-
