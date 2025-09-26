@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
 import type { RecbotCommand } from '../commands.ts'
-import { createGuildOrUpdatePreferredChannel } from '../../db/db.js'
+import { createGuildOrUpdatePreferredChannel } from '../../db/db.ts'
 
 export const recinit: RecbotCommand = {
     data: new SlashCommandBuilder()
