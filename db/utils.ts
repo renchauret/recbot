@@ -1,7 +1,6 @@
 import type { Profile } from '../models/profile.ts'
 import fs from 'fs'
 import type { Guild } from '../models/guild.js'
-import type { PickedRec } from '../models/picked-rec.js'
 
 const GUILDS_DIR = './db/guilds'
 const getProfilesDirPath = (guidId: string) => `${getOrCreateGuildDirPath(guidId)}/profiles`

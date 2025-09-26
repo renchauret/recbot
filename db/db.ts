@@ -70,12 +70,13 @@ export const getAllGuildIds = async (): Promise<string[]> =>
         (await collection.find().toArray()).map(guild => guild.id)
     )
 
-export const createProfileOrUpdateDisplayName = async (guildId: string, profileId: string, displayName: string) =>
+export const createProfileOrUpdateDisplayName = async (guildId: string, profileId: string, displayName: string): Promise<Profile> =>
     runWithCollection(PROFILES_COLLECTION, async (collection: Collection) => {
         const oldProfile = await collection.findOne({ id: profileId, guildId: guildId })
         if (oldProfile) {
             oldProfile.displayName = displayName
             await collection.insertOne(oldProfile)
+            return oldProfile
         } else {
             const newProfile: Profile = {
                 id: profileId,
@@ -85,6 +86,7 @@ export const createProfileOrUpdateDisplayName = async (guildId: string, profileI
                 pickedRecs: []
             }
             await collection.insertOne(newProfile)
+            return newProfile
         }
     })
 
