@@ -24,7 +24,7 @@ const pickRec = async (guildId: string) => {
     const pickedProfile = profiles[randomInt(0, profiles.length)]
     const pickedRec = await savePickRec(guildId, pickedProfile)
 
-    await channel.send(`This week's recommendation is ${pickedRec.name} from ${pickedProfile.displayName}! Give it a listen by next Friday.`)
+    await channel.send(`This week's recommendation is ${pickedRec.name} from @${pickedProfile.displayName}! Give it a listen by next Friday.`)
 }
 
 const pickRecs = async () => {
