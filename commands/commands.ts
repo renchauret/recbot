@@ -1,6 +1,6 @@
 import { SharedSlashCommand } from '@discordjs/builders'
 import { ChatInputCommandInteraction } from 'discord.js'
-import { help } from './commands/help.ts'
+import { rechelp } from './commands/rechelp.ts'
 import { rec } from './commands/rec.ts'
 import { recq } from './commands/recq.ts'
 import { recd } from './commands/recd.ts'
@@ -16,12 +16,13 @@ export type RecbotCommand = {
 
 // command name : command
 export const commands: Map<string, RecbotCommand> = new Map([
-    [help.data.name, help],
+    [rechelp.data.name, rechelp],
     [rec.data.name, rec],
     [recd.data.name, recd],
     [recq.data.name, recq],
     [recswap.data.name, recswap],
     [recclear.data.name, recclear],
     [recmove.data.name, recmove],
-    [recinit.data.name, recinit]
+    [recinit.data.name, recinit],
+    [rechelp.data.name, rechelp]
 ])

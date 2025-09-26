@@ -1,9 +1,9 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
 import { commands, type RecbotCommand } from '../commands.ts'
 
-export const help: RecbotCommand = {
+export const rechelp: RecbotCommand = {
     data: new SlashCommandBuilder()
-        .setName('help')
+        .setName('rechelp')
         .setDescription('Lists valid commands'),
     execute: async (interaction: ChatInputCommandInteraction) => {
         const intro = "I'm recbot. Use me to build a queue of recommendations. Each week, " +
