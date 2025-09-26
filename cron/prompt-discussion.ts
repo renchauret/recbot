@@ -5,7 +5,7 @@ import {
 } from '../db/utils.ts'
 import { CronJob } from 'cron'
 import { getConfig } from '../config/config.ts'
-import { getChannel } from '../discord/discord-client.js'
+import { getChannel } from '../discord/discord-client.ts'
 
 const promptDiscussion = async (guildId: string) => {
     const preferredChannelId = getPreferredChannelId(guildId)

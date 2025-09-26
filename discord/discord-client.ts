@@ -1,5 +1,5 @@
 import { Client, Events, GatewayIntentBits, MessageFlags } from 'discord.js'
-import { commands } from '../commands/commands.js'
+import { commands } from '../commands/commands.ts'
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] })
 
