@@ -3,9 +3,9 @@ import {
     getMostRecentPickedRec,
     getPreferredChannelId,
 } from '../db/utils.ts'
-import { client } from '../index.ts'
 import { CronJob } from 'cron'
 import { getConfig } from '../config/config.ts'
+import { getChannel } from '../discord/discord-client.js'
 
 const promptDiscussion = async (guildId: string) => {
     const preferredChannelId = getPreferredChannelId(guildId)
@@ -13,7 +13,7 @@ const promptDiscussion = async (guildId: string) => {
         console.error("Can't prompt discussion with no preferred channel. Run /init command")
         return
     }
-    const channel = await client.channels.fetch(preferredChannelId)
+    const channel = await getChannel(preferredChannelId)
     if (!channel.isSendable()) {
         console.error("Can't prompt discussion in a channel which isn't sendable. Run /init command in a better channel")
         return

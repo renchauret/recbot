@@ -1,8 +1,8 @@
 import { getAllGuildIds, getAllProfiles, getPreferredChannelId, savePicRec, saveProfile } from '../db/utils.ts'
 import { randomInt } from 'node:crypto'
-import { client } from '../index.ts'
 import { CronJob } from 'cron'
 import { getConfig } from '../config/config.ts'
+import { getChannel } from '../discord/discord-client.js'
 
 const pickRec = async (guildId: string) => {
     const preferredChannelId = getPreferredChannelId(guildId)
@@ -10,7 +10,7 @@ const pickRec = async (guildId: string) => {
         console.error("Can't pick a rec with no preferred channel. Run /init command")
         return
     }
-    const channel = await client.channels.fetch(preferredChannelId)
+    const channel = await getChannel(preferredChannelId)
     if (!channel.isSendable()) {
         console.error("Can't pick a rec in a channel which isn't sendable. Run /init command in a better channel")
         return
