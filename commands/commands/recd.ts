@@ -18,6 +18,10 @@ export const recd: RecbotCommand = {
             recs.splice(indexToDelete, 1)
             return recs
         })
-        await interaction.reply(`${user.displayName} deleted rec at index ${indexToDelete}`)
+        try {
+            await interaction.reply(`${user.displayName} deleted rec at index ${indexToDelete}`)
+        } catch (e) {
+            console.error(`Failed to respond to recd interaction from user ${user.id} in guild ${interaction.guildId}: ${e}`)
+        }
     }
 }

@@ -24,6 +24,10 @@ export const recmove: RecbotCommand = {
             recs.splice(destinationIndex, 0, recs.splice(originIndex, 1)[0]);
             return recs
         })
-        await interaction.reply(`${user.displayName} moved rec at index ${originIndex} to index ${destinationIndex}`)
+        try {
+            await interaction.reply(`${user.displayName} moved rec at index ${originIndex} to index ${destinationIndex}`)
+        } catch (e) {
+            console.error(`Failed to respond to recmove interaction from user ${user.id} in guild ${interaction.guildId}: ${e}`)
+        }
     }
 }

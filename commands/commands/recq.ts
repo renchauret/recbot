@@ -16,6 +16,10 @@ export const recq: RecbotCommand = {
             console.error(`Failed to get recq for user ${user.id} in guid ${interaction.guildId}: ${e}`)
         }
         const formattedRecs = profile.recs.map(((rec, index) => `${index}: <${rec}>`)).join('\n')
-        await interaction.reply(`${user.displayName}'s rec queue:\n${formattedRecs}`)
+        try {
+            await interaction.reply(`${user.displayName}'s rec queue:\n${formattedRecs}`)
+        } catch (e) {
+            console.error(`Failed to respond to recq interaction from user ${user.id} in guild ${interaction.guildId}: ${e}`)
+        }
     }
 }

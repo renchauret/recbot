@@ -11,6 +11,10 @@ export const rechelp: RecbotCommand = {
         const formattedCommands = commands.values().map(
             (command) => `${command.data.name}: ${command.data.description}`
         ).toArray().join('\n')
-        await interaction.reply(`${intro}\nCommands:\n${formattedCommands}`);
+        try {
+            await interaction.reply(`${intro}\nCommands:\n${formattedCommands}`);
+        } catch (e) {
+            console.error(`Failed to respond to rechelp interaction from user ${interaction.user.id} in guild ${interaction.guildId}: ${e}`)
+        }
     }
 }

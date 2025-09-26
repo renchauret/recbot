@@ -18,6 +18,10 @@ export const rec: RecbotCommand = {
             recs.push(recommendation)
             return recs
         })
-        await interaction.reply(`${user.displayName} recommended <${recommendation}>`)
+        try {
+            await interaction.reply(`${user.displayName} recommended <${recommendation}>`)
+        } catch (e) {
+            console.error(`Failed to respond to rec interaction from user ${user.id} in guild ${interaction.guildId}: ${e}`)
+        }
     }
 }

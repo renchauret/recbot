@@ -26,6 +26,10 @@ export const recswap: RecbotCommand = {
             recs[index2] = rec1ToSwap
             return recs
         })
-        await interaction.reply(`${user.displayName} swapped recs at indices ${index1} and ${index2}`)
+        try {
+            await interaction.reply(`${user.displayName} swapped recs at indices ${index1} and ${index2}`)
+        } catch (e) {
+            console.error(`Failed to respond to recswap interaction from user ${user.id} in guild ${interaction.guildId}: ${e}`)
+        }
     }
 }

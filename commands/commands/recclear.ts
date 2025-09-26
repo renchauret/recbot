@@ -9,6 +9,10 @@ export const recclear: RecbotCommand = {
     execute: async (interaction: ChatInputCommandInteraction) => {
         const user = interaction.user
         await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => [])
-        await interaction.reply(`${user.displayName} deleted all recs from their queue`)
+        try {
+            await interaction.reply(`${user.displayName} deleted all recs from their queue`)
+        } catch (e) {
+            console.error(`Failed to respond to recclear interaction from user ${user.id} in guild ${interaction.guildId}: ${e}`)
+        }
     }
 }

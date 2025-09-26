@@ -7,7 +7,15 @@ export const recinit: RecbotCommand = {
         .setName('recinit')
         .setDescription('Sets this as the preferred channel for automated messages.'),
     execute: async (interaction: ChatInputCommandInteraction) => {
-        await createGuildOrUpdatePreferredChannel(interaction.guildId, interaction.channelId)
-        await interaction.reply(`${interaction.user.displayName} initialized recbot in #${interaction.channel.name}`)
+        try {
+            await createGuildOrUpdatePreferredChannel(interaction.guildId, interaction.channelId)
+        } catch (e) {
+            console.error(`Failed to execute recinit command from user ${interaction.user.id} in guild ${interaction.guildId}: ${e}`)
+        }
+        try {
+            await interaction.reply(`${interaction.user.displayName} initialized recbot in #${interaction.channel.name}`)
+        } catch (e) {
+            console.error(`Failed to respond to recinit interaction from user ${interaction.user.id} in guild ${interaction.guildId}: ${e}`)
+        }
     }
 }
