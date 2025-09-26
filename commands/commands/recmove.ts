@@ -1,7 +1,6 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
 import type { RecbotCommand } from '../commands.ts'
-import type { Profile } from '../../models/profile.ts'
-import { createProfileOrUpdateDisplayName, saveRecsToProfile } from '../../db/db.ts'
+import {modifyRecs } from '../../db/db.ts'
 
 export const recmove: RecbotCommand = {
     data: new SlashCommandBuilder()
@@ -21,10 +20,10 @@ export const recmove: RecbotCommand = {
         const user = interaction.user
         const originIndex = interaction.options.getNumber('origin')
         const destinationIndex = interaction.options.getNumber('destination')
-        const profile: Profile = await createProfileOrUpdateDisplayName(interaction.guildId, user.id, user.displayName)
-        const recToMove = profile.recs[originIndex]
-        profile.recs.splice(destinationIndex, 0, profile.recs.splice(originIndex, 1)[0]);
-        await saveRecsToProfile(interaction.guildId, profile.id, profile.recs)
-        await interaction.reply(`${user.displayName} moved rec <${recToMove}> to index ${destinationIndex}`)
+        await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => {
+            recs.splice(destinationIndex, 0, recs.splice(originIndex, 1)[0]);
+            return recs
+        })
+        await interaction.reply(`${user.displayName} moved rec at index ${originIndex} to index ${destinationIndex}`)
     }
 }

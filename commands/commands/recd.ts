@@ -1,7 +1,6 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
 import type { RecbotCommand } from '../commands.ts'
-import type { Profile } from '../../models/profile.ts'
-import { createProfileOrUpdateDisplayName, saveRecsToProfile } from '../../db/db.ts'
+import { modifyRecs } from '../../db/db.ts'
 
 export const recd: RecbotCommand = {
     data: new SlashCommandBuilder()
@@ -15,10 +14,10 @@ export const recd: RecbotCommand = {
     execute: async (interaction: ChatInputCommandInteraction) => {
         const user = interaction.user
         const indexToDelete = interaction.options.getNumber('index')
-        const profile: Profile = await createProfileOrUpdateDisplayName(interaction.guildId, user.id, user.displayName)
-        const recToDelete = profile.recs[indexToDelete]
-        profile.recs.splice(indexToDelete, 1)
-        await saveRecsToProfile(interaction.guildId, profile.id, profile.recs)
-        await interaction.reply(`${user.displayName} deleted rec <${recToDelete}>`)
+        await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => {
+            recs.splice(indexToDelete, 1)
+            return recs
+        })
+        await interaction.reply(`${user.displayName} deleted rec at index ${indexToDelete}`)
     }
 }

@@ -128,3 +128,14 @@ export const savePickRec = async (guildId: string, profile: Profile): Promise<Pi
     })
     return pickedRec
 }
+
+export const modifyRecs = async (
+    guildId: string,
+    profileId: string,
+    displayName: string,
+    modRecs: (recs: string[]) => string[]
+) => {
+    const profile: Profile = await createProfileOrUpdateDisplayName(guildId, profileId, displayName)
+    const recs = modRecs(profile.recs)
+    await saveRecsToProfile(guildId, profileId, recs)
+}
