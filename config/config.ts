@@ -4,7 +4,7 @@ export type Config = {
 }
 
 const prodConfig: Config = {
-    pickRecCron: '0 13 17 * * 5',
+    pickRecCron: '0 15 17 * * 5',
     promptDiscussionCron: '0 0 16 * * 5'
 }
 const devConfig: Config = {
