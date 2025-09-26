@@ -17,7 +17,7 @@ const pickRec = async (guildId: string) => {
     }
 
     const profiles = getAllProfiles(guildId).filter(profile => profile.recs.length > 0)
-    if (!profiles) {
+    if (!profiles || profiles.length === 0) {
         console.error('No recs to choose from')
         return
     }
