@@ -1,6 +1,7 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
 import type { RecbotCommand } from '../commands.ts'
 import { modifyRecs } from '../../db/db.ts'
+import { formatRecs } from '../utils.ts'
 
 export const rec: RecbotCommand = {
     data: new SlashCommandBuilder()
@@ -14,12 +15,12 @@ export const rec: RecbotCommand = {
     execute: async (interaction: ChatInputCommandInteraction) => {
         const user = interaction.user
         const recommendation = interaction.options.getString('recommendation')
-        await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => {
+        const recs = await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => {
             recs.push(recommendation)
             return recs
         })
         try {
-            await interaction.reply(`${user.displayName} recommended <${recommendation}>`)
+            await interaction.reply(`${user.displayName} recommended <${recommendation}>\nNew rec queue:\n${formatRecs(recs)}`)
         } catch (e) {
             console.error(`Failed to respond to rec interaction from user ${user.id} in guild ${interaction.guildId}: ${e}`)
         }

@@ -1,6 +1,7 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
 import type { RecbotCommand } from '../commands.ts'
-import {modifyRecs } from '../../db/db.ts'
+import { modifyRecs } from '../../db/db.ts'
+import { formatRecs } from '../utils.ts'
 
 export const recmove: RecbotCommand = {
     data: new SlashCommandBuilder()
@@ -20,12 +21,12 @@ export const recmove: RecbotCommand = {
         const user = interaction.user
         const originIndex = interaction.options.getNumber('origin')
         const destinationIndex = interaction.options.getNumber('destination')
-        await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => {
+        const recs = await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => {
             recs.splice(destinationIndex, 0, recs.splice(originIndex, 1)[0]);
             return recs
         })
         try {
-            await interaction.reply(`${user.displayName} moved rec at index ${originIndex} to index ${destinationIndex}`)
+            await interaction.reply(`${user.displayName} moved rec at index ${originIndex} to index ${destinationIndex}\nNew rec queue:\n${formatRecs(recs)}`)
         } catch (e) {
             console.error(`Failed to respond to recmove interaction from user ${user.id} in guild ${interaction.guildId}: ${e}`)
         }

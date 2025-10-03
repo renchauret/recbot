@@ -1,6 +1,7 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
 import type { RecbotCommand } from '../commands.ts'
 import { modifyRecs } from '../../db/db.ts'
+import { formatRecs } from '../utils.ts'
 
 export const recswap: RecbotCommand = {
     data: new SlashCommandBuilder()
@@ -20,14 +21,14 @@ export const recswap: RecbotCommand = {
         const user = interaction.user
         const index1 = interaction.options.getNumber('index1')
         const index2 = interaction.options.getNumber('index2')
-        await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => {
+        const recs = await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => {
             const rec1ToSwap = recs[index1]
             recs[index1] = recs[index2]
             recs[index2] = rec1ToSwap
             return recs
         })
         try {
-            await interaction.reply(`${user.displayName} swapped recs at indices ${index1} and ${index2}`)
+            await interaction.reply(`${user.displayName} swapped recs at indices ${index1} and ${index2}\nNew rec queue:\n${formatRecs(recs)}`)
         } catch (e) {
             console.error(`Failed to respond to recswap interaction from user ${user.id} in guild ${interaction.guildId}: ${e}`)
         }
