@@ -18,6 +18,9 @@ export const recd: RecbotCommand = {
         let message: string
         try {
             const recs = await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => {
+                if (indexToDelete >= recs.length || indexToDelete < 0) {
+                    throw Error(`Invalid index ${indexToDelete}`)
+                }
                 recs.splice(indexToDelete, 1)
                 return recs
             })

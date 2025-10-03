@@ -24,6 +24,12 @@ export const recswap: RecbotCommand = {
         let message: string
         try {
             const recs = await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => {
+                if (index1 >= recs.length || index1 < 0) {
+                    throw Error(`Invalid index ${index1}`)
+                }
+                if (index2 >= recs.length || index2 < 0) {
+                    throw Error(`Invalid index ${index2}`)
+                }
                 const rec1ToSwap = recs[index1]
                 recs[index1] = recs[index2]
                 recs[index2] = rec1ToSwap

@@ -24,6 +24,12 @@ export const recmove: RecbotCommand = {
         let message: string
         try {
             const recs = await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => {
+                if (originIndex >= recs.length || originIndex < 0) {
+                    throw Error(`Invalid index ${originIndex}`)
+                }
+                if (destinationIndex >= recs.length || destinationIndex < 0) {
+                    throw Error(`Invalid index ${destinationIndex}`)
+                }
                 recs.splice(destinationIndex, 0, recs.splice(originIndex, 1)[0]);
                 return recs
             })
