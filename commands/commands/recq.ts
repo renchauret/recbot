@@ -12,7 +12,7 @@ export const recq: RecbotCommand = {
         let message: string
         try {
             const recs = await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => recs)
-            message = `${user.displayName}'s rec queue:\n${formatRecs(recs)}`
+            message = `### ${user.displayName}'s rec queue:\n${formatRecs(recs)}`
         } catch (e) {
             console.error(`Failed to perform recq command for user ${user.id} in guild ${interaction.guildId}: ${e}`)
             message = 'An error occurred. Please try again.'

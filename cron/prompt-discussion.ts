@@ -22,7 +22,7 @@ const promptDiscussion = async (guildId: string) => {
         return
     }
 
-    await channel.send(messageOptions[randomInt(0, messageOptions.length)](latestPickedRec.name))
+    await channel.send(`## Let's discuss!\n${messageOptions[randomInt(0, messageOptions.length)](latestPickedRec.name)}`)
 }
 
 const promptDiscussions = async () => {

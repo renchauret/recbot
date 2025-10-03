@@ -21,7 +21,7 @@ export const rec: RecbotCommand = {
                 recs.push(recommendation)
                 return recs
             })
-            message = `${user.displayName} recommended <${recommendation}>\nNew rec queue:\n${formatRecs(recs)}`
+            message = `${user.displayName} recommended <${recommendation}>\n### New rec queue:\n${formatRecs(recs)}`
         } catch (e) {
             console.error(`Failed to perform rec command for user ${user.id} in guild ${interaction.guildId}: ${e}`)
             message = 'An error occurred. Please try again.'

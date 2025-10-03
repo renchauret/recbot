@@ -24,7 +24,7 @@ export const recd: RecbotCommand = {
                 recs.splice(indexToDelete, 1)
                 return recs
             })
-            message = `${user.displayName} deleted rec at index ${indexToDelete}\nNew rec queue:\n${formatRecs(recs)}`
+            message = `${user.displayName} deleted rec at index ${indexToDelete}\n### New rec queue:\n${formatRecs(recs)}`
         } catch (e) {
             console.error(`Failed to perform recd command for user ${user.id} in guild ${interaction.guildId}: ${e}`)
             message = 'An error occurred. Please try again.'

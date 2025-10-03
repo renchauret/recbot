@@ -12,7 +12,7 @@ export const recclear: RecbotCommand = {
         let message: string
         try {
             const recs = await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => [])
-            message = `${user.displayName} deleted all recs from their queue\nNew rec queue:\n${formatRecs(recs)}`
+            message = `${user.displayName} deleted all recs from their queue\n### New rec queue:\n${formatRecs(recs)}`
         } catch (e) {
             console.error(`Failed to perform recclear command for user ${user.id} in guild ${interaction.guildId}: ${e}`)
             message = 'An error occurred. Please try again.'

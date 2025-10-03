@@ -33,7 +33,7 @@ export const recmove: RecbotCommand = {
                 recs.splice(destinationIndex, 0, recs.splice(originIndex, 1)[0]);
                 return recs
             })
-            message = `${user.displayName} moved rec at index ${originIndex} to index ${destinationIndex}\nNew rec queue:\n${formatRecs(recs)}`
+            message = `${user.displayName} moved rec at index ${originIndex} to index ${destinationIndex}\n### New rec queue:\n${formatRecs(recs)}`
         } catch (e) {
             console.error(`Failed to perform recmove command for user ${user.id} in guild ${interaction.guildId}: ${e}`)
             message = 'An error occurred. Please try again.'

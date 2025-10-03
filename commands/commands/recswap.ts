@@ -35,7 +35,7 @@ export const recswap: RecbotCommand = {
                 recs[index2] = rec1ToSwap
                 return recs
             })
-            message = `${user.displayName} swapped recs at indices ${index1} and ${index2}\nNew rec queue:\n${formatRecs(recs)}`
+            message = `${user.displayName} swapped recs at indices ${index1} and ${index2}\n### New rec queue:\n${formatRecs(recs)}`
         } catch (e) {
             console.error(`Failed to perform recswap command for user ${user.id} in guild ${interaction.guildId}: ${e}`)
             message = 'An error occurred. Please try again.'
