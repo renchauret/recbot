@@ -21,14 +21,21 @@ export const recswap: RecbotCommand = {
         const user = interaction.user
         const index1 = interaction.options.getNumber('index1')
         const index2 = interaction.options.getNumber('index2')
-        const recs = await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => {
-            const rec1ToSwap = recs[index1]
-            recs[index1] = recs[index2]
-            recs[index2] = rec1ToSwap
-            return recs
-        })
+        let message: string
         try {
-            await interaction.reply(`${user.displayName} swapped recs at indices ${index1} and ${index2}\nNew rec queue:\n${formatRecs(recs)}`)
+            const recs = await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => {
+                const rec1ToSwap = recs[index1]
+                recs[index1] = recs[index2]
+                recs[index2] = rec1ToSwap
+                return recs
+            })
+            message = `${user.displayName} swapped recs at indices ${index1} and ${index2}\nNew rec queue:\n${formatRecs(recs)}`
+        } catch (e) {
+            console.error(`Failed to perform recswap command for user ${user.id} in guild ${interaction.guildId}: ${e}`)
+            message = 'An error occurred. Please try again.'
+        }
+        try {
+            await interaction.reply(message)
         } catch (e) {
             console.error(`Failed to respond to recswap interaction from user ${user.id} in guild ${interaction.guildId}: ${e}`)
         }

@@ -9,9 +9,16 @@ export const recq: RecbotCommand = {
         .setDescription('Shows you your rec queue.'),
     execute: async (interaction: ChatInputCommandInteraction) => {
         const user = interaction.user
-        const recs = await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => recs)
+        let message: string
         try {
-            await interaction.reply(`${user.displayName}'s rec queue:\n${formatRecs(recs)}`)
+            const recs = await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => recs)
+            message = `${user.displayName}'s rec queue:\n${formatRecs(recs)}`
+        } catch (e) {
+            console.error(`Failed to perform recq command for user ${user.id} in guild ${interaction.guildId}: ${e}`)
+            message = 'An error occurred. Please try again.'
+        }
+        try {
+            await interaction.reply(message)
         } catch (e) {
             console.error(`Failed to respond to recq interaction from user ${user.id} in guild ${interaction.guildId}: ${e}`)
         }

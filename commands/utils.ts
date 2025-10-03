@@ -1,1 +1,1 @@
-export const formatRecs = (recs: string[]) => recs.map(((rec, index) => `${index}: <${rec}>`)).join('\n')
+export const formatRecs = (recs: string[]): string => recs.map(((rec, index) => `${index}: <${rec}>`)).join('\n')

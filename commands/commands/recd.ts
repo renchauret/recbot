@@ -15,12 +15,19 @@ export const recd: RecbotCommand = {
     execute: async (interaction: ChatInputCommandInteraction) => {
         const user = interaction.user
         const indexToDelete = interaction.options.getNumber('index')
-        const recs = await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => {
-            recs.splice(indexToDelete, 1)
-            return recs
-        })
+        let message: string
         try {
-            await interaction.reply(`${user.displayName} deleted rec at index ${indexToDelete}\nNew rec queue:\n${formatRecs(recs)}`)
+            const recs = await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => {
+                recs.splice(indexToDelete, 1)
+                return recs
+            })
+            message = `${user.displayName} deleted rec at index ${indexToDelete}\nNew rec queue:\n${formatRecs(recs)}`
+        } catch (e) {
+            console.error(`Failed to perform recd command for user ${user.id} in guild ${interaction.guildId}: ${e}`)
+            message = 'An error occurred. Please try again.'
+        }
+        try {
+            await interaction.reply(message)
         } catch (e) {
             console.error(`Failed to respond to recd interaction from user ${user.id} in guild ${interaction.guildId}: ${e}`)
         }

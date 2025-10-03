@@ -147,5 +147,6 @@ export const modifyRecs = async (
         return recs
     } catch (e) {
         console.error(`Failed to modify recs for user ${profileId} in guild ${guildId}: ${e}`)
+        throw e
     }
 }

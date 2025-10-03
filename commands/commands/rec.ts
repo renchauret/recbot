@@ -15,12 +15,19 @@ export const rec: RecbotCommand = {
     execute: async (interaction: ChatInputCommandInteraction) => {
         const user = interaction.user
         const recommendation = interaction.options.getString('recommendation')
-        const recs = await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => {
-            recs.push(recommendation)
-            return recs
-        })
+        let message: string
         try {
-            await interaction.reply(`${user.displayName} recommended <${recommendation}>\nNew rec queue:\n${formatRecs(recs)}`)
+            const recs = await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => {
+                recs.push(recommendation)
+                return recs
+            })
+            message = `${user.displayName} recommended <${recommendation}>\nNew rec queue:\n${formatRecs(recs)}`
+        } catch (e) {
+            console.error(`Failed to perform rec command for user ${user.id} in guild ${interaction.guildId}: ${e}`)
+            message = 'An error occurred. Please try again.'
+        }
+        try {
+            await interaction.reply(message)
         } catch (e) {
             console.error(`Failed to respond to rec interaction from user ${user.id} in guild ${interaction.guildId}: ${e}`)
         }

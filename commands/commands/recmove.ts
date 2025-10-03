@@ -21,12 +21,19 @@ export const recmove: RecbotCommand = {
         const user = interaction.user
         const originIndex = interaction.options.getNumber('origin')
         const destinationIndex = interaction.options.getNumber('destination')
-        const recs = await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => {
-            recs.splice(destinationIndex, 0, recs.splice(originIndex, 1)[0]);
-            return recs
-        })
+        let message: string
         try {
-            await interaction.reply(`${user.displayName} moved rec at index ${originIndex} to index ${destinationIndex}\nNew rec queue:\n${formatRecs(recs)}`)
+            const recs = await modifyRecs(interaction.guildId, user.id, user.displayName, (recs: string[]) => {
+                recs.splice(destinationIndex, 0, recs.splice(originIndex, 1)[0]);
+                return recs
+            })
+            message = `${user.displayName} moved rec at index ${originIndex} to index ${destinationIndex}\nNew rec queue:\n${formatRecs(recs)}`
+        } catch (e) {
+            console.error(`Failed to perform recmove command for user ${user.id} in guild ${interaction.guildId}: ${e}`)
+            message = 'An error occurred. Please try again.'
+        }
+        try {
+            await interaction.reply(message)
         } catch (e) {
             console.error(`Failed to respond to recmove interaction from user ${user.id} in guild ${interaction.guildId}: ${e}`)
         }
