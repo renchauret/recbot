@@ -18,11 +18,10 @@ export type RecbotCommand = {
 export const commands: Map<string, RecbotCommand> = new Map([
     [rechelp.data.name, rechelp],
     [rec.data.name, rec],
-    [recd.data.name, recd],
     [recq.data.name, recq],
-    [recswap.data.name, recswap],
-    [recclear.data.name, recclear],
     [recmove.data.name, recmove],
-    [recinit.data.name, recinit],
-    [rechelp.data.name, rechelp]
+    [recswap.data.name, recswap],
+    [recd.data.name, recd],
+    [recclear.data.name, recclear],
+    [recinit.data.name, recinit]
 ])

@@ -5,18 +5,18 @@ import { createGuildOrUpdatePreferredChannel } from '../../db/db.ts'
 export const recinit: RecbotCommand = {
     data: new SlashCommandBuilder()
         .setName('recinit')
-        .setDescription('Introduces recbot and sets this as the preferred channel for automated messages.'),
+        .setDescription('Introduces recbot and sets the current channel as the destination for automated messages.'),
     execute: async (interaction: ChatInputCommandInteraction) => {
         try {
             await createGuildOrUpdatePreferredChannel(interaction.guildId, interaction.channelId)
         } catch (e) {
             console.error(`Failed to execute recinit command from user ${interaction.user.id} in guild ${interaction.guildId}: ${e}`)
         }
-        const message = '#Welcome to Music Club!\nUse me to build your queue of recommended albums. '
+        const message = '# Welcome to Music Club!\nUse me to build your queue of recommended albums. '
             + "Every Friday at 8 PM, I'll pick the top album off of a random person's queue. "
             + 'Make time to listen to listen to it during the next week. '
             + "The next Friday at 4 PM, I'll prompt a discussion about the album. "
-            + 'Get started with /rec or learn more with /rechelp. '
+            + 'Get started with **/rec** or learn more with **/rechelp**. '
             + 'Enjoy!'
         try {
             await interaction.reply(message)
