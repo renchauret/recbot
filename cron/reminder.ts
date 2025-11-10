@@ -9,19 +9,21 @@ const sendReminder = async (guildId: string) => {
 
     const latestPickedRec = await getMostRecentPickedRec(guildId)
     if (!latestPickedRec) {
-        console.error("No latest picked rec to discuss")
+        console.error("No latest picked rec to remind")
         return
     }
 
-    const dueByDays = CronJob.from({
+    const mockPromptDiscussionCronJob = CronJob.from({
         cronTime: getConfig().promptDiscussionCron,
         onTick: () => {},
         start: false,
         timeZone: 'America/New_York'
-    }).nextDate().diff(DateTime.now()).days
+    })
+    const dueByDays = mockPromptDiscussionCronJob.nextDate().diff(DateTime.now()).days
     await channel.send(
         `## Don't forget!\nThis week's recommendation, ${latestPickedRec.name}, is due in ${dueByDays} days. Give it a listen!`
     )
+    await mockPromptDiscussionCronJob.stop()
 }
 
 const sendReminders = async () => {
