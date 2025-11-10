@@ -2,7 +2,7 @@ import { CronJob } from 'cron'
 import { getConfig } from '../config/config.ts'
 import { getAllGuildIds, getMostRecentPickedRec } from '../db/db.ts'
 import { randomInt } from 'crypto'
-import {getPreferredChannel} from "../util/getPreferredChannel.js";
+import { getPreferredChannel } from '../util/get-preferred-channel.ts';
 
 const promptDiscussion = async (guildId: string) => {
     const channel = await getPreferredChannel(guildId)

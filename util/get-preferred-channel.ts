@@ -1,5 +1,5 @@
-import {getOrCreateGuild} from "../db/db.js";
-import {getChannel} from "../discord/discord-client.js";
+import { getOrCreateGuild } from '../db/db.ts';
+import { getChannel } from '../discord/discord-client.ts';
 
 export const getPreferredChannel = async (guildId: string) => {
     const preferredChannelId = (await getOrCreateGuild(guildId))?.preferredChannelId
