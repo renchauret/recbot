@@ -1,8 +1,8 @@
-import { getConfig } from '../config/config.ts';
-import { CronJob } from 'cron';
-import { DateTime } from 'luxon';
-import { getAllGuildIds, getMostRecentPickedRec } from '../db/db.ts';
-import { getPreferredChannel } from '../util/get-preferred-channel.ts';
+import { getConfig } from '../config/config.ts'
+import { CronJob } from 'cron'
+import { DateTime } from 'luxon'
+import { getAllGuildIds, getMostRecentPickedRec } from '../db/db.ts'
+import { getPreferredChannel } from '../util/get-preferred-channel.ts'
 
 const sendReminder = async (guildId: string) => {
     const channel = await getPreferredChannel(guildId)
