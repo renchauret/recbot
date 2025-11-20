@@ -19,7 +19,9 @@ const sendReminder = async (guildId: string) => {
         start: false,
         timeZone: 'America/New_York'
     })
-    const dueByDays = mockPromptDiscussionCronJob.nextDate().diff(DateTime.now()).days
+    const dueByDays = Math.ceil(
+        mockPromptDiscussionCronJob.nextDate().diff(DateTime.now()).milliseconds / 86400000 // 86400000 = ms per day
+    )
     await channel.send(
         `## Don't forget!\nThis week's recommendation, ${latestPickedRec.name}, is due in ${dueByDays} days. Give it a listen!`
     )
