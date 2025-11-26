@@ -1,20 +1,11 @@
 import { CronJob } from 'cron'
 import { getConfig } from '../config/config.ts'
-import { getChannel } from '../discord/discord-client.ts'
-import { getAllGuildIds, getOrCreateGuild, getMostRecentPickedRec } from '../db/db.ts'
+import { getAllGuildIds, getMostRecentPickedRec } from '../db/db.ts'
 import { randomInt } from 'crypto'
+import { getPreferredChannel } from '../util/get-preferred-channel.ts'
 
 const promptDiscussion = async (guildId: string) => {
-    const preferredChannelId = (await getOrCreateGuild(guildId))?.preferredChannelId
-    if (preferredChannelId === null) {
-        console.error("Can't prompt discussion with no preferred channel. Run /init command")
-        return
-    }
-    const channel = await getChannel(preferredChannelId)
-    if (!channel.isSendable()) {
-        console.error("Can't prompt discussion in a channel which isn't sendable. Run /init command in a better channel")
-        return
-    }
+    const channel = await getPreferredChannel(guildId)
 
     const latestPickedRec = await getMostRecentPickedRec(guildId)
     if (!latestPickedRec) {
