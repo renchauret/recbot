@@ -7,9 +7,9 @@ import { getPreferredChannel } from '../util/get-preferred-channel.ts'
 const pickRec = async (guildId: string) => {
     const channel = await getPreferredChannel(guildId)
 
-    const profiles = (await getProfiles(guildId)).filter(profile => profile.recs.length > 0)
+    const profiles = (await getProfiles(guildId)).filter(profile => profile.recs.length > 0 && !profile.disabled)
     if (!profiles || profiles.length === 0) {
-        console.error('No recs to choose from for guild ${guildId}')
+        console.error(`No recs to choose from for guild ${guildId}`)
         return
     }
     const pickedProfile = profiles[randomInt(0, profiles.length)]
