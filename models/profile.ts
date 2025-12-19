@@ -5,5 +5,6 @@ export type Profile = {
     guildId: string,
     displayName: string,
     recs: string[],
-    pickedRecs: PickedRec[]
+    pickedRecs: PickedRec[],
+    disabled: boolean | undefined
 }
