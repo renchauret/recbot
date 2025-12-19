@@ -9,7 +9,7 @@ const pickRec = async (guildId: string) => {
 
     const profiles = (await getProfiles(guildId)).filter(profile => profile.recs.length > 0)
     if (!profiles || profiles.length === 0) {
-        console.error('No recs to choose from')
+        console.error('No recs to choose from for guild ${guildId}')
         return
     }
     const pickedProfile = profiles[randomInt(0, profiles.length)]
