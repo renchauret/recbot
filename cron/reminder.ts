@@ -32,7 +32,7 @@ const sendReminders = async () => {
     try {
         (await getAllGuildIds()).forEach(guildId => sendReminder(guildId))
     } catch (e) {
-        console.error(`Failed to prompt discussions : ${e}`)
+        console.error(`Failed to remind: ${e}`)
     }
 }
 
