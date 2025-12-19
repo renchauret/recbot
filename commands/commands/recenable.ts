@@ -5,7 +5,7 @@ import { setProfileDisabled } from '../../db/db.ts'
 export const recenable: RecbotCommand = {
     data: new SlashCommandBuilder()
         .setName('recenable')
-        .setDescription('Disables your recommendations from being picked.'),
+        .setDescription('Enables your recommendations to be picked.'),
     execute: async (interaction: ChatInputCommandInteraction) => {
         const user = interaction.user
         let message: string
