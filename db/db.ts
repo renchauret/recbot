@@ -91,7 +91,8 @@ export const createProfileOrUpdateDisplayName = async (guildId: string, profileI
                 guildId: guildId,
                 displayName: displayName,
                 recs: [],
-                pickedRecs: []
+                pickedRecs: [],
+                disabled: false
             }
             await collection.insertOne(newProfile)
             return newProfile
@@ -103,9 +104,14 @@ export const getProfiles = async (guildId: string): Promise<Profile[]> =>
         (await collection.find({ guildId: guildId }).toArray())
     )
 
-export const saveRecsToProfile = async (guildId: string, profileId: string, recs: string[])=>
+const saveRecsToProfile = async (guildId: string, profileId: string, recs: string[])=>
     runWithCollection(PROFILES_COLLECTION, async (collection: Collection) =>
         await collection.updateOne({ id: profileId, guildId: guildId }, { $set: { recs: recs } })
+    )
+
+export const setProfileDisabled = async (guildId: string, profileId: string, disabled: boolean) =>
+    runWithCollection(PROFILES_COLLECTION, async (collection: Collection) =>
+        await collection.updateOne({ id: profileId, guildId: guildId }, { $set: { disabled: disabled } })
     )
 
 export const savePickRec = async (guildId: string, profile: Profile): Promise<PickedRec> => {

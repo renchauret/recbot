@@ -9,7 +9,7 @@ const sendReminder = async (guildId: string) => {
 
     const latestPickedRec = await getMostRecentPickedRec(guildId)
     if (!latestPickedRec) {
-        console.error("No latest picked rec to remind")
+        console.error(`No latest picked rec to remind for guild ${guildId}`)
         return
     }
 
@@ -32,7 +32,7 @@ const sendReminders = async () => {
     try {
         (await getAllGuildIds()).forEach(guildId => sendReminder(guildId))
     } catch (e) {
-        console.error(`Failed to prompt discussions: ${e}`)
+        console.error(`Failed to remind: ${e}`)
     }
 }
 

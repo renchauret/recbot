@@ -9,7 +9,7 @@ const promptDiscussion = async (guildId: string) => {
 
     const latestPickedRec = await getMostRecentPickedRec(guildId)
     if (!latestPickedRec) {
-        console.error("No latest picked rec to discuss")
+        console.error(`No latest picked rec to discuss for guild ${guildId}`)
         return
     }
 
