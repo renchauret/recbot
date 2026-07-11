@@ -1,7 +1,7 @@
 import { randomInt } from 'node:crypto'
 import { CronJob } from 'cron'
 import { getConfig } from '../config/config.ts'
-import { getAllGuildIds, getProfiles, savePickRec } from '../db/db.ts'
+import { getAllGuildIds, getProfiles, savePickRec, updatePity } from '../db/db.ts'
 import { getPreferredChannel } from '../util/get-preferred-channel.ts'
 
 const pickRec = async (guildId: string) => {
@@ -12,8 +12,12 @@ const pickRec = async (guildId: string) => {
         console.error(`No recs to choose from for guild ${guildId}`)
         return
     }
-    const pickedProfile = profiles[randomInt(0, profiles.length)]
+
+    const pickedProfile = pickWinningProfile(profiles);
+
     const pickedRec = await savePickRec(guildId, pickedProfile)
+
+    await updatePity(profiles, pickedProfile);
 
     await channel.send(`## This week's recommendation is...\n### ${pickedRec.name} from <@${pickedProfile.id}>!\nGive it a listen by next Friday.`)
 }
@@ -24,6 +28,30 @@ const pickRecs = async () => {
     } catch (e) {
         console.error(`Failed to pick recs: ${e}`)
     }
+}
+
+const pickWinningProfile = (eligibleProfiles: Profile[]): Profile | undefined => {
+    if (eligibleProfiles.length === 0) {
+        return undefined;
+    }
+
+    let totalPity = 0;
+    const boundaries = [];
+    eligibleProfiles.forEach(profile => {
+        const pity = Math.floor(1.5 ** (profile.weeksSinceLastPicked ?? 0));
+        totalPity += pity;
+        boundaries.push(boundaries.length === 0 ? pity : boundaries[boundaries.length - 1] + pity);
+    });
+
+    const randomNumber = randomInt(0, totalPity);
+    for (let i = 0; i < eligibleProfiles.length; i++) {
+        const currentBoundary = boundaries[i];
+        if (randomNumber < currentBoundary) {
+            return eligibleProfiles[i];
+        }
+    }
+
+    return eligibleProfiles[0];
 }
 
 export const startPickRecJob = () => {
