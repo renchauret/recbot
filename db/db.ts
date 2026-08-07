@@ -92,6 +92,7 @@ export const createProfileOrUpdateDisplayName = async (guildId: string, profileI
                 displayName: displayName,
                 recs: [],
                 pickedRecs: [],
+                weeksSinceLastPicked: 0,
                 disabled: false
             }
             await collection.insertOne(newProfile)
@@ -154,5 +155,36 @@ export const modifyRecs = async (
     } catch (e) {
         console.error(`Failed to modify recs for user ${profileId} in guild ${guildId}: ${e}`)
         throw e
+    }
+}
+
+export const updatePity = async (eligibleProfiles: Profile[], pickedProfile: Profile): Promise<void> => {
+    try {
+        const idsToIncrement = eligibleProfiles
+            .filter(profile => profile.id !== pickedProfile.id)
+            .map(profile => profile.id);
+
+        const result = await runWithCollection('profiles', async (collection) => {
+            return await collection.bulkWrite([
+                {
+                    updateOne: {
+                        filter: { id: pickedProfile.id, guildId: pickedProfile.guildId },
+                        update: { $set: { weeksSinceLastPicked: 0 } }
+                    }
+                },
+                {
+                    updateMany: {
+                        filter: { 
+                            id: { $in: idsToIncrement },
+                            guildId: pickedProfile.guildId, 
+                        },
+                        update: { $inc: { weeksSinceLastPicked: 1 } }
+                    }
+                }
+            ]);
+        });
+    } catch (e) {
+        console.error(`Failed to update pity: ${e}`);
+        throw e;
     }
 }

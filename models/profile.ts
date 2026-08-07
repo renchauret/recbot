@@ -6,5 +6,6 @@ export type Profile = {
     displayName: string,
     recs: string[],
     pickedRecs: PickedRec[],
+    weeksSinceLastPicked: number | undefined,
     disabled: boolean | undefined
 }
