@@ -92,3 +92,13 @@ const loginWithRetry = async (token: string, attempt = 0): Promise<void> => {
 }
 
 export const getChannel = async (channelId: string) => await client.channels.fetch(channelId)
+
+/**
+ * Runs a callback once the client is connected. Anything that needs to fetch
+ * channels has to wait for this rather than running at startup.
+ */
+export const onClientReady = (callback: () => void | Promise<void>) => {
+    client.once(Events.ClientReady, () => {
+        void Promise.resolve(callback()).catch(e => console.error(`Client ready callback failed: ${e}`))
+    })
+}
