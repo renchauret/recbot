@@ -6,6 +6,9 @@ import { getPreferredChannel } from '../util/get-preferred-channel.ts'
 
 const sendReminder = async (guildId: string) => {
     const channel = await getPreferredChannel(guildId)
+    if (!channel) {
+        return
+    }
 
     const latestPickedRec = await getMostRecentPickedRec(guildId)
     if (!latestPickedRec) {
@@ -30,7 +33,13 @@ const sendReminder = async (guildId: string) => {
 
 const sendReminders = async () => {
     try {
-        (await getAllGuildIds()).forEach(guildId => sendReminder(guildId))
+        const guildIds = await getAllGuildIds()
+        const results = await Promise.allSettled(guildIds.map(guildId => sendReminder(guildId)))
+        results.forEach((result, i) => {
+            if (result.status === 'rejected') {
+                console.error(`Failed to remind guild ${guildIds[i]}: ${result.reason}`)
+            }
+        })
     } catch (e) {
         console.error(`Failed to remind: ${e}`)
     }

@@ -22,11 +22,14 @@ const runWithMongoClient = async <T> (toRun: (client: MongoClient) => T): Promis
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
         return await toRun(client)
-    } catch (e) {
-        console.error(e)
     } finally {
-        // Ensures that the client will close when you finish/error
-        await client.close();
+        // Ensures that the client will close when you finish/error. Swallow
+        // close failures so they can't mask the error we're already unwinding.
+        try {
+            await client.close();
+        } catch (e) {
+            console.error(`Failed to close mongo client: ${e}`)
+        }
     }
 }
 

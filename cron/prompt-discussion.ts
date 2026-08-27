@@ -6,6 +6,9 @@ import { getPreferredChannel } from '../util/get-preferred-channel.ts'
 
 const promptDiscussion = async (guildId: string) => {
     const channel = await getPreferredChannel(guildId)
+    if (!channel) {
+        return
+    }
 
     const latestPickedRec = await getMostRecentPickedRec(guildId)
     if (!latestPickedRec) {
@@ -18,7 +21,13 @@ const promptDiscussion = async (guildId: string) => {
 
 const promptDiscussions = async () => {
     try {
-        (await getAllGuildIds()).forEach(guildId => promptDiscussion(guildId))
+        const guildIds = await getAllGuildIds()
+        const results = await Promise.allSettled(guildIds.map(guildId => promptDiscussion(guildId)))
+        results.forEach((result, i) => {
+            if (result.status === 'rejected') {
+                console.error(`Failed to prompt discussion for guild ${guildIds[i]}: ${result.reason}`)
+            }
+        })
     } catch (e) {
         console.error(`Failed to prompt discussions: ${e}`)
     }
