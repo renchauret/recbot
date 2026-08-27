@@ -1,0 +1,29 @@
+[Unit]
+Description=recbot Discord bot
+Documentation=https://github.com/renchauret/recbot
+After=network-online.target
+Wants=network-online.target
+# systemd gives up on a unit that restarts too often (5 times in 10s by
+# default) and leaves it stopped until someone intervenes -- exactly the
+# multi-day outage this unit exists to prevent. Never stop retrying.
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=ren
+WorkingDirectory=/home/ren/Documents/projects/recbot
+# The repo runs TypeScript directly via --experimental-strip-types, which needs
+# Node 22.6+. The `node` npm dependency vendors a matching runtime, so use that
+# rather than whatever `node` happens to be on PATH (systemd units get a
+# minimal environment and will not see nvm).
+ExecStart=/home/ren/Documents/projects/recbot/node_modules/node/bin/node --experimental-strip-types index.ts
+# The token and mongodbUri are read from .env in WorkingDirectory by dotenv.
+Restart=always
+# Long enough that a crash loop does not hammer the Discord API.
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=recbot
+
+[Install]
+WantedBy=multi-user.target
