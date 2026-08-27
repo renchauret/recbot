@@ -37,7 +37,7 @@ const pickRecs = async () => {
     }
 }
 
-const pickWinningProfile = (eligibleProfiles: Profile[]): Profile => {
+const pickWinningProfile = (eligibleProfiles: Profile[]): Profile | undefined => {
     if (eligibleProfiles.length === 0) {
         return undefined;
     }
