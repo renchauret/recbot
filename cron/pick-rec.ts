@@ -3,6 +3,7 @@ import { CronJob } from 'cron'
 import { getConfig } from '../config/config.ts'
 import { getAllGuildIds, getProfiles, savePickRec, updatePity } from '../db/db.ts'
 import { getPreferredChannel } from '../util/get-preferred-channel.ts'
+import type { Profile } from '../models/profile.ts'
 
 const pickRec = async (guildId: string) => {
     const channel = await getPreferredChannel(guildId)
@@ -24,13 +25,19 @@ const pickRec = async (guildId: string) => {
 
 const pickRecs = async () => {
     try {
-        (await getAllGuildIds()).forEach(guildId => pickRec(guildId))
+        const guildIds = await getAllGuildIds()
+        const results = await Promise.allSettled(guildIds.map(guildId => pickRec(guildId)))
+        results.forEach((result, i) => {
+            if (result.status === 'rejected') {
+                console.error(`Failed to pick rec for guild ${guildIds[i]}: ${result.reason}`)
+            }
+        })
     } catch (e) {
         console.error(`Failed to pick recs: ${e}`)
     }
 }
 
-const pickWinningProfile = (eligibleProfiles: Profile[]): Profile | undefined => {
+const pickWinningProfile = (eligibleProfiles: Profile[]): Profile => {
     if (eligibleProfiles.length === 0) {
         return undefined;
     }
