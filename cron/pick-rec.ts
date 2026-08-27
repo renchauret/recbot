@@ -7,6 +7,9 @@ import type { Profile } from '../models/profile.ts'
 
 const pickRec = async (guildId: string) => {
     const channel = await getPreferredChannel(guildId)
+    if (!channel) {
+        return
+    }
 
     const profiles = (await getProfiles(guildId)).filter(profile => profile.recs.length > 0 && !profile.disabled)
     if (!profiles || profiles.length === 0) {
