@@ -3,7 +3,7 @@ import { CronJob } from 'cron'
 import { getConfig } from '../config/config.ts'
 import { getAllGuildIds, getMostRecentPickedRec, getProfiles, savePickRec, updatePity } from '../db/db.ts'
 import { getPreferredChannel } from '../util/get-preferred-channel.ts'
-import { getPreviousOccurrence } from '../util/previous-occurrence.ts'
+import { getExpectedPreviousPick } from '../util/expected-previous-pick.ts'
 import type { Profile } from '../models/profile.ts'
 
 const TIME_ZONE = 'America/New_York'
@@ -51,9 +51,7 @@ const pickRecs = async () => {
 const catchUpMissedPick = async (guildId: string, dueAt: Date) => {
     const latestPickedRec = await getMostRecentPickedRec(guildId)
     if (!latestPickedRec) {
-        // Nothing has ever been picked here, so there is no missed run to make
-        // up -- a guild that just ran /recinit waits for its first scheduled
-        // pick like normal.
+        // Nothing has ever been picked here, so there is no missed run to make up
         return
     }
 
@@ -70,7 +68,7 @@ const catchUpMissedPick = async (guildId: string, dueAt: Date) => {
 
 const catchUpMissedPicks = async () => {
     try {
-        const dueAt = getPreviousOccurrence(getConfig().pickRecCron, TIME_ZONE)
+        const dueAt = getExpectedPreviousPick(getConfig().pickRecCron, TIME_ZONE)
         if (!dueAt) {
             return
         }
