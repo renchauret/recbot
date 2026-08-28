@@ -1,7 +1,7 @@
 import { configDotenv } from 'dotenv'
-import { startPickRecJob } from './cron/pick-rec.ts'
+import { runPickRecCatchUp, startPickRecJob } from './cron/pick-rec.ts'
 import { startPromptDiscussionJob } from './cron/prompt-discussion.ts'
-import { initDiscordClient } from './discord/discord-client.ts'
+import { initDiscordClient, onClientReady } from './discord/discord-client.ts'
 import { startReminderJob } from './cron/reminder.ts'
 
 // A rejected promise nobody handled would otherwise terminate the process on
@@ -24,6 +24,8 @@ const installProcessHandlers = () => {
 const init = () => {
     installProcessHandlers()
     configDotenv()
+    // Registered before login so the callback can't be missed.
+    onClientReady(runPickRecCatchUp)
     initDiscordClient()
     startPickRecJob()
     startPromptDiscussionJob()

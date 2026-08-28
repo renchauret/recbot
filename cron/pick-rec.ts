@@ -1,9 +1,12 @@
 import { randomInt } from 'node:crypto'
 import { CronJob } from 'cron'
 import { getConfig } from '../config/config.ts'
-import { getAllGuildIds, getProfiles, savePickRec, updatePity } from '../db/db.ts'
+import { getAllGuildIds, getMostRecentPickedRec, getProfiles, savePickRec, updatePity } from '../db/db.ts'
 import { getPreferredChannel } from '../util/get-preferred-channel.ts'
+import { getExpectedPreviousPick } from '../util/expected-previous-pick.ts'
 import type { Profile } from '../models/profile.ts'
+
+const TIME_ZONE = 'America/New_York'
 
 const pickRec = async (guildId: string) => {
     const channel = await getPreferredChannel(guildId)
@@ -40,6 +43,48 @@ const pickRecs = async () => {
     }
 }
 
+/**
+ * Runs the pick a guild missed while the bot was down. Only the most recent
+ * scheduled pick is considered, so a longer outage still produces exactly one
+ * catch-up rather than a burst of backdated picks.
+ */
+const catchUpMissedPick = async (guildId: string, dueAt: Date) => {
+    const latestPickedRec = await getMostRecentPickedRec(guildId)
+    if (!latestPickedRec) {
+        // Nothing has ever been picked here, so there is no missed run to make up
+        return
+    }
+
+    if (latestPickedRec.pickedDate >= dueAt.getTime()) {
+        return
+    }
+
+    console.log(
+        `Guild ${guildId} missed the pick due at ${dueAt.toISOString()} ` +
+        `(last pick was ${new Date(latestPickedRec.pickedDate).toISOString()}), picking now`
+    )
+    await pickRec(guildId)
+}
+
+const catchUpMissedPicks = async () => {
+    try {
+        const dueAt = getExpectedPreviousPick(getConfig().pickRecCron, TIME_ZONE)
+        if (!dueAt) {
+            return
+        }
+
+        const guildIds = await getAllGuildIds()
+        const results = await Promise.allSettled(guildIds.map(guildId => catchUpMissedPick(guildId, dueAt)))
+        results.forEach((result, i) => {
+            if (result.status === 'rejected') {
+                console.error(`Failed to catch up missed pick for guild ${guildIds[i]}: ${result.reason}`)
+            }
+        })
+    } catch (e) {
+        console.error(`Failed to catch up missed picks: ${e}`)
+    }
+}
+
 const pickWinningProfile = (eligibleProfiles: Profile[]): Profile | undefined => {
     if (eligibleProfiles.length === 0) {
         return undefined;
@@ -70,7 +115,13 @@ export const startPickRecJob = () => {
         cronTime: cron,
         onTick: pickRecs,
         start: true,
-        timeZone: 'America/New_York'
+        timeZone: TIME_ZONE
     })
     console.log(`started pickrec job with cronTime ${cron}`)
 }
+
+/**
+ * Makes up a pick missed while the bot was down. Must run once the Discord
+ * client is ready, since it needs to fetch the channel to post in.
+ */
+export const runPickRecCatchUp = () => catchUpMissedPicks()
