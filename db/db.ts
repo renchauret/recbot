@@ -2,9 +2,11 @@ import { Collection, MongoClient, ServerApiVersion } from 'mongodb'
 import type { Guild } from '../models/guild.ts'
 import type { PickedRec } from '../models/picked-rec.ts'
 import type { Profile } from '../models/profile.ts'
+import type { TrackPoll } from '../models/track-poll.ts'
 
 const GUILDS_COLLECTION = 'guilds'
 const PROFILES_COLLECTION = 'profiles'
+const TRACK_POLLS_COLLECTION = 'trackPolls'
 
 const runWithMongoClient = async <T> (toRun: (client: MongoClient) => T): Promise<T> => {
     const uri = process.env.mongodbUri
@@ -47,6 +49,7 @@ export const createGuildOrUpdatePreferredChannel = async (guildId: string, prefe
             const guild: Guild = {
                 id: guildId,
                 preferredChannelId: preferredChannelId,
+                playlistId: null,
                 pickedRecs: []
             }
             await collection.insertOne(guild)
@@ -62,6 +65,7 @@ export const getOrCreateGuild = async (guildId: string): Promise<Guild> =>
             const guild: Guild = {
                 id: guildId,
                 preferredChannelId: null,
+                playlistId: null,
                 pickedRecs: []
             }
             await collection.insertOne(guild)
@@ -191,3 +195,44 @@ export const updatePity = async (eligibleProfiles: Profile[], pickedProfile: Pro
         throw e;
     }
 }
+export const setPlaylistId = async (guildId: string, playlistId: string) =>
+    await runWithCollection(GUILDS_COLLECTION, async (collection: Collection) => {
+        // Upsert so the playlist can be set before anyone has run /recinit.
+        await collection.updateOne(
+            { id: guildId },
+            {
+                $set: { playlistId: playlistId },
+                $setOnInsert: { preferredChannelId: null, pickedRecs: [] }
+            },
+            { upsert: true }
+        )
+    })
+
+export const saveTrackPoll = async (trackPoll: TrackPoll) =>
+    await runWithCollection(TRACK_POLLS_COLLECTION, async (collection: Collection) =>
+        await collection.insertOne(trackPoll)
+    )
+
+export const getUnresolvedTrackPolls = async (): Promise<TrackPoll[]> =>
+    await runWithCollection(TRACK_POLLS_COLLECTION, async (collection: Collection) =>
+        (await collection.find({ resolved: false }).toArray()) as unknown as TrackPoll[]
+    )
+
+/**
+ * Marks a poll done so it can't be tallied or announced twice, whatever the
+ * outcome was.
+ */
+export const resolveTrackPoll = async (
+    messageId: string,
+    result: Pick<TrackPoll, 'winnerTrackName' | 'winnerTrackUri' | 'addedToPlaylist'>
+) =>
+    await runWithCollection(TRACK_POLLS_COLLECTION, async (collection: Collection) =>
+        await collection.updateOne({ messageId: messageId }, {
+            $set: {
+                resolved: true,
+                winnerTrackName: result.winnerTrackName ?? null,
+                winnerTrackUri: result.winnerTrackUri ?? null,
+                addedToPlaylist: result.addedToPlaylist ?? false
+            }
+        })
+    )

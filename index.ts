@@ -3,6 +3,7 @@ import { runPickRecCatchUp, startPickRecJob } from './cron/pick-rec.ts'
 import { startPromptDiscussionJob } from './cron/prompt-discussion.ts'
 import { initDiscordClient, onClientReady } from './discord/discord-client.ts'
 import { startReminderJob } from './cron/reminder.ts'
+import { startTallyTrackPollJob } from './cron/tally-track-poll.ts'
 
 // A rejected promise nobody handled would otherwise terminate the process on
 // Node 22. Most of these are transient (Discord or Atlas briefly unreachable),
@@ -30,6 +31,7 @@ const init = () => {
     startPickRecJob()
     startPromptDiscussionJob()
     startReminderJob()
+    startTallyTrackPollJob()
 }
 
 init()

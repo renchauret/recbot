@@ -3,6 +3,7 @@ import { getConfig } from '../config/config.ts'
 import { getAllGuildIds, getMostRecentPickedRec } from '../db/db.ts'
 import { randomInt } from 'crypto'
 import { getPreferredChannel } from '../util/get-preferred-channel.ts'
+import { postTrackPoll } from './track-poll.ts'
 
 const promptDiscussion = async (guildId: string) => {
     const channel = await getPreferredChannel(guildId)
@@ -14,6 +15,14 @@ const promptDiscussion = async (guildId: string) => {
     if (!latestPickedRec) {
         console.error(`No latest picked rec to discuss for guild ${guildId}`)
         return
+    }
+
+    // The poll goes up first so it sits above the discussion prompt. A Spotify
+    // failure shouldn't cost the club its discussion.
+    try {
+        await postTrackPoll(guildId, channel, latestPickedRec.name)
+    } catch (e) {
+        console.error(`Failed to post track poll for guild ${guildId}: ${e}`)
     }
 
     await channel.send(`## Let's discuss!\n${messageOptions[randomInt(0, messageOptions.length)](latestPickedRec.name)}`)
