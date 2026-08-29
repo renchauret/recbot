@@ -21,7 +21,7 @@ const devConfig: Config = {
     promptDiscussionCron: '30 * * * * *',
     reminderCron: '10 * * * * *',
     tallyTrackPollCron: '*/20 * * * * *',
-    pollDurationMs: 120_000
+    pollDurationMs: 60_000
 }
 
 export const getConfig = (): Config => process.env.NODE_ENV === 'development'

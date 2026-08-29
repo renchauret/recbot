@@ -5,7 +5,9 @@ export const addTrackToPlaylist = async (
     playlistId: string,
     trackUri: string
 ): Promise<void> => {
-    await client.request(`/playlists/${playlistId}/tracks`, {
+    // The /tracks alias for this collection is refused outright now; /items is
+    // the path Spotify still serves.
+    await client.request(`/playlists/${playlistId}/items`, {
         method: 'POST',
         body: { uris: [trackUri] },
         as: 'user'

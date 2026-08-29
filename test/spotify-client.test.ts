@@ -89,7 +89,7 @@ test('uses the refresh token grant for user requests', async () => {
     const { calls, fetchImpl } = stubFetch([tokenResponse('user-token'), jsonResponse({ snapshot_id: 'abc' })])
     const client = createSpotifyClient(() => CREDENTIALS, fetchImpl, () => 0)
 
-    await client.request('/playlists/xyz/tracks', {
+    await client.request('/playlists/xyz/items', {
         method: 'POST',
         body: { uris: ['spotify:track:1'] },
         as: 'user'
@@ -112,7 +112,7 @@ test('keeps app and user tokens apart', async () => {
     const client = createSpotifyClient(() => CREDENTIALS, fetchImpl, () => 0)
 
     await client.request('/albums/abc')
-    await client.request('/playlists/xyz/tracks', { method: 'POST', as: 'user' })
+    await client.request('/playlists/xyz/items', { method: 'POST', as: 'user' })
 
     assert.equal(authorizationOf(calls[1]), 'Bearer app-token')
     assert.equal(authorizationOf(calls[3]), 'Bearer user-token')
@@ -151,7 +151,7 @@ test('handles an empty response body', async () => {
     const { fetchImpl } = stubFetch([tokenResponse('app-token'), () => new Response(null, { status: 204 })])
     const client = createSpotifyClient(() => CREDENTIALS, fetchImpl, () => 0)
 
-    assert.equal(await client.request('/playlists/xyz/tracks', { method: 'POST' }), undefined)
+    assert.equal(await client.request('/playlists/xyz/items', { method: 'POST' }), undefined)
 })
 
 test('reports what it is configured to do', async () => {
