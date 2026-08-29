@@ -1,15 +1,14 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { fetchAlbum, fetchTrackPopularity } from '../spotify/album.ts'
-import { SpotifyError, type SpotifyClient } from '../spotify/spotify-client.ts'
+import { fetchAlbum } from '../spotify/album.ts'
+import type { SpotifyClient } from '../spotify/spotify-client.ts'
 
 const apiTrack = (index: number) => ({
     id: `id${index}`,
     name: `Track ${index}`,
     uri: `spotify:track:id${index}`,
     disc_number: 1,
-    track_number: index,
-    popularity: index
+    track_number: index
 })
 
 /**
@@ -84,52 +83,4 @@ test('stops paging when a page comes back empty', async () => {
     })
 
     assert.equal((await fetchAlbum(client, 'abc')).tracks.length, 1)
-})
-
-test('fetches popularity in batches of fifty', async () => {
-    const ids = Array.from({ length: 60 }, (_, index) => `id${index + 1}`)
-    const { requested, client } = stubClient({
-        [`/tracks?ids=${ids.slice(0, 50).join(',')}`]: {
-            tracks: ids.slice(0, 50).map((id, index) => ({ ...apiTrack(index + 1), id: id }))
-        },
-        [`/tracks?ids=${ids.slice(50).join(',')}`]: {
-            tracks: ids.slice(50).map((id, index) => ({ ...apiTrack(index + 51), id: id }))
-        }
-    })
-
-    const popularity = await fetchTrackPopularity(client, ids)
-
-    assert.equal(requested.length, 2)
-    assert.equal(popularity.size, 60)
-    assert.equal(popularity.get('id60'), 60)
-})
-
-test('skips tracks spotify could not resolve', async () => {
-    const { client } = stubClient({
-        '/tracks?ids=id1,id2': { tracks: [apiTrack(1), null] }
-    })
-
-    const popularity = await fetchTrackPopularity(client, ['id1', 'id2'])
-
-    assert.deepEqual([...popularity.entries()], [['id1', 1]])
-})
-
-test('defaults missing popularity to zero', async () => {
-    const { client } = stubClient({
-        '/tracks?ids=id1': { tracks: [{ ...apiTrack(1), popularity: undefined }] }
-    })
-
-    assert.equal((await fetchTrackPopularity(client, ['id1'])).get('id1'), 0)
-})
-
-test('falls back to no popularity when spotify refuses the batch endpoint', async () => {
-    const client: SpotifyClient = {
-        canRead: () => true,
-        canWritePlaylists: () => true,
-        request: async () => {
-            throw new SpotifyError(403, 'Forbidden')
-        }
-    }
-
-    assert.equal((await fetchTrackPopularity(client, ['id1', 'id2'])).size, 0)
 })

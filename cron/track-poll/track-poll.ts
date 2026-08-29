@@ -8,7 +8,7 @@ import {
     toPollDurationHours,
     truncate
 } from '../../discord/poll-limits.ts'
-import { fetchAlbum, fetchTrackPopularity } from '../../spotify/album.ts'
+import { fetchAlbum } from '../../spotify/album.ts'
 import { selectPollTracks } from '../../spotify/select-poll-tracks.ts'
 import { getSpotifyClient } from '../../spotify/spotify-client.ts'
 import { parseAlbumId } from '../../spotify/spotify-urls.ts'
@@ -69,8 +69,7 @@ export const postTrackPoll = async (
         return
     }
 
-    const popularity = await fetchTrackPopularity(spotify, album.tracks.map(track => track.id))
-    const tracks = selectPollTracks(album.tracks, popularity, MAX_POLL_ANSWERS)
+    const tracks = selectPollTracks(album.tracks, MAX_POLL_ANSWERS)
 
     const durationMs = getConfig().pollDurationMs
     const message = await channel.send({
@@ -99,8 +98,7 @@ export const postTrackPoll = async (
         answers: tracks.map((track, index) => ({
             answerId: answerIds[index] ?? index + 1,
             trackName: track.name,
-            trackUri: track.uri,
-            popularity: popularity.get(track.id) ?? 0
+            trackUri: track.uri
         })),
         resolved: false
     })

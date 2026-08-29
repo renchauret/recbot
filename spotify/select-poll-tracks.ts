@@ -5,22 +5,9 @@ const inAlbumOrder = (a: AlbumTrack, b: AlbumTrack): number =>
 
 /**
  * The tracks to put on the ballot, in album order. Discord polls hold at most
- * ten answers, so a longer album is trimmed to its most popular tracks rather
- * than its first ten, which would leave the back half of the album unvotable.
+ * ten answers, so a longer album is cut off there. Ranking the album's tracks
+ * first would be better, but Spotify doesn't give this app popularity to rank
+ * them by.
  */
-export const selectPollTracks = (
-    tracks: AlbumTrack[],
-    popularityByTrackId: Map<string, number>,
-    maxAnswers: number
-): AlbumTrack[] => {
-    const ordered = [...tracks].sort(inAlbumOrder)
-    if (ordered.length <= maxAnswers) {
-        return ordered
-    }
-
-    const popularity = (track: AlbumTrack) => popularityByTrackId.get(track.id) ?? 0
-    return [...ordered]
-        .sort((a, b) => popularity(b) - popularity(a) || inAlbumOrder(a, b))
-        .slice(0, maxAnswers)
-        .sort(inAlbumOrder)
-}
+export const selectPollTracks = (tracks: AlbumTrack[], maxAnswers: number): AlbumTrack[] =>
+    [...tracks].sort(inAlbumOrder).slice(0, maxAnswers)

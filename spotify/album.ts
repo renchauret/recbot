@@ -23,8 +23,7 @@ type ApiTrack = {
     name: string,
     uri: string,
     disc_number: number,
-    track_number: number,
-    popularity?: number
+    track_number: number
 }
 
 type ApiAlbum = {
@@ -64,34 +63,4 @@ export const fetchAlbum = async (client: SpotifyClient, albumId: string): Promis
         url: album.external_urls?.spotify ?? `https://open.spotify.com/album/${albumId}`,
         tracks
     }
-}
-
-/**
- * Popularity by track id. The album endpoint returns simplified tracks, which
- * omit popularity, so the full track objects have to be fetched to rank them.
- */
-export const fetchTrackPopularity = async (
-    client: SpotifyClient,
-    trackIds: string[]
-): Promise<Map<string, number>> => {
-    const popularity = new Map<string, number>()
-    for (let offset = 0; offset < trackIds.length; offset += PAGE_SIZE) {
-        const ids = trackIds.slice(offset, offset + PAGE_SIZE).join(',')
-        try {
-            const page = await client.request<{ tracks: (ApiTrack | null)[] }>(`/tracks?ids=${ids}`)
-            page.tracks.forEach(track => {
-                if (track) {
-                    popularity.set(track.id, track.popularity ?? 0)
-                }
-            })
-        } catch (e) {
-            // An app in development mode is refused this endpoint outright, and
-            // isn't given popularity anywhere else either. Ranking falls back to
-            // album order rather than costing the club its poll. Later batches
-            // would fail the same way, so stop here.
-            console.error(`Failed to fetch track popularity, falling back to album order: ${e}`)
-            break
-        }
-    }
-    return popularity
 }

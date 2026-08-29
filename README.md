@@ -50,9 +50,13 @@ track poll and the playlist.
 When the week's rec is a Spotify album link and the bot can write to the guild's
 playlist, the Friday discussion prompt is preceded by a poll on the album's best
 track. Discord polls hold at most ten answers, so an album longer than that is
-trimmed to its ten most popular tracks, listed in album order. The poll closes
-after 24 hours, and the winning track is announced and added to the playlist. A
-tie goes to the more popular track on Spotify.
+cut off at its first ten tracks. The poll closes after 24 hours, and the winning
+track is announced and added to the playlist. A tie is drawn at random.
+
+Ranking the ballot by track popularity would be better than taking the first ten,
+but Spotify only returns the `popularity` field to apps granted extended quota
+mode; an app in development mode is refused it, along with every batch `?ids=`
+endpoint.
 
 A single-track release has nothing to vote on, so it skips the poll and goes
 straight to the playlist.
