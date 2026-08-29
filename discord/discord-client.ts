@@ -1,4 +1,4 @@
-import { Client, Events, GatewayIntentBits, MessageFlags } from 'discord.js'
+import { Client, Events, GatewayIntentBits, type Message, MessageFlags } from 'discord.js'
 import { commands } from '../commands/commands.ts'
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] })
@@ -92,6 +92,18 @@ const loginWithRetry = async (token: string, attempt = 0): Promise<void> => {
 }
 
 export const getChannel = async (channelId: string) => await client.channels.fetch(channelId)
+
+/**
+ * A message the bot posted earlier, or null if the channel is gone or can't hold
+ * messages. Rejects the way discord.js does if the message itself is missing.
+ */
+export const fetchMessage = async (channelId: string, messageId: string): Promise<Message | null> => {
+    const channel = await getChannel(channelId)
+    if (!channel || !channel.isTextBased()) {
+        return null
+    }
+    return await channel.messages.fetch(messageId)
+}
 
 /**
  * Runs a callback once the client is connected. Anything that needs to fetch
