@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { fetchAlbum, fetchTrackPopularity } from '../spotify/album.ts'
-import type { SpotifyClient } from '../spotify/spotify-client.ts'
+import { SpotifyError, type SpotifyClient } from '../spotify/spotify-client.ts'
 
 const apiTrack = (index: number) => ({
     id: `id${index}`,
@@ -120,4 +120,16 @@ test('defaults missing popularity to zero', async () => {
     })
 
     assert.equal((await fetchTrackPopularity(client, ['id1'])).get('id1'), 0)
+})
+
+test('falls back to no popularity when spotify refuses the batch endpoint', async () => {
+    const client: SpotifyClient = {
+        canRead: () => true,
+        canWritePlaylists: () => true,
+        request: async () => {
+            throw new SpotifyError(403, 'Forbidden')
+        }
+    }
+
+    assert.equal((await fetchTrackPopularity(client, ['id1', 'id2'])).size, 0)
 })

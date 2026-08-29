@@ -77,12 +77,21 @@ export const fetchTrackPopularity = async (
     const popularity = new Map<string, number>()
     for (let offset = 0; offset < trackIds.length; offset += PAGE_SIZE) {
         const ids = trackIds.slice(offset, offset + PAGE_SIZE).join(',')
-        const page = await client.request<{ tracks: (ApiTrack | null)[] }>(`/tracks?ids=${ids}`)
-        page.tracks.forEach(track => {
-            if (track) {
-                popularity.set(track.id, track.popularity ?? 0)
-            }
-        })
+        try {
+            const page = await client.request<{ tracks: (ApiTrack | null)[] }>(`/tracks?ids=${ids}`)
+            page.tracks.forEach(track => {
+                if (track) {
+                    popularity.set(track.id, track.popularity ?? 0)
+                }
+            })
+        } catch (e) {
+            // An app in development mode is refused this endpoint outright, and
+            // isn't given popularity anywhere else either. Ranking falls back to
+            // album order rather than costing the club its poll. Later batches
+            // would fail the same way, so stop here.
+            console.error(`Failed to fetch track popularity, falling back to album order: ${e}`)
+            break
+        }
     }
     return popularity
 }
