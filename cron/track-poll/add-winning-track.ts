@@ -1,6 +1,6 @@
-import { getOrCreateGuild } from '../db/db.ts'
-import { addTrackToPlaylist } from '../spotify/playlist.ts'
-import { getSpotifyClient } from '../spotify/spotify-client.ts'
+import { getOrCreateGuild } from '../../db/db.ts'
+import { addTrackToPlaylist } from '../../spotify/playlist.ts'
+import { getSpotifyClient } from '../../spotify/spotify-client.ts'
 
 /**
  * Adds a winning track to the guild's playlist, reporting whether it landed. A

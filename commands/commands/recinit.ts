@@ -15,8 +15,8 @@ export const recinit: RecbotCommand = {
         const message = '# Welcome to Music Club!\nUse me to build your queue of recommended albums. '
             + "Every Friday at 9 PM, I'll pick the first album off of a random person's queue. "
             + 'Make time to listen to it during the next week. '
-            + "The next Friday at 4 PM, I'll open a poll for the album's best track and prompt a discussion. "
-            + 'Set a playlist with **/recplaylist** and I\'ll add each week\'s winning track to it. '
+            + "The next Friday at 4 PM, I'll prompt a discussion. "
+            + 'Set a playlist with **/recplaylist**, and I\'ll open a poll for each album\'s best track and add it to the playlist. '
             + 'Get started with **/rec** or learn more with **/rechelp**. '
             + 'Enjoy!'
         try {

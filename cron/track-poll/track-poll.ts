@@ -1,18 +1,18 @@
 import type { SendableChannels } from 'discord.js'
-import { getConfig } from '../config/config.ts'
-import { getOrCreateGuild, saveTrackPoll } from '../db/db.ts'
+import { getConfig } from '../../config/config.ts'
+import { getOrCreateGuild, saveTrackPoll } from '../../db/db.ts'
 import {
     MAX_ANSWER_TEXT_LENGTH,
     MAX_POLL_ANSWERS,
     MAX_QUESTION_TEXT_LENGTH,
     toPollDurationHours,
     truncate
-} from '../discord/poll-limits.ts'
-import { fetchAlbum, fetchTrackPopularity } from '../spotify/album.ts'
-import { selectPollTracks } from '../spotify/select-poll-tracks.ts'
-import { getSpotifyClient } from '../spotify/spotify-client.ts'
-import { parseAlbumId } from '../spotify/spotify-urls.ts'
-import { formatDuration } from '../util/format-duration.ts'
+} from '../../discord/poll-limits.ts'
+import { fetchAlbum, fetchTrackPopularity } from '../../spotify/album.ts'
+import { selectPollTracks } from '../../spotify/select-poll-tracks.ts'
+import { getSpotifyClient } from '../../spotify/spotify-client.ts'
+import { parseAlbumId } from '../../spotify/spotify-urls.ts'
+import { formatDuration } from '../../util/format-duration.ts'
 import { addWinningTrackToPlaylist } from './add-winning-track.ts'
 
 // A one-answer poll isn't a vote.

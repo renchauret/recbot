@@ -3,7 +3,7 @@ import { getConfig } from '../config/config.ts'
 import { getAllGuildIds, getMostRecentPickedRec } from '../db/db.ts'
 import { randomInt } from 'crypto'
 import { getPreferredChannel } from '../util/get-preferred-channel.ts'
-import { postTrackPoll } from './track-poll.ts'
+import { postTrackPoll } from './track-poll/track-poll.ts'
 
 const promptDiscussion = async (guildId: string) => {
     const channel = await getPreferredChannel(guildId)
