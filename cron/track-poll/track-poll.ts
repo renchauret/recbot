@@ -41,7 +41,16 @@ export const postTrackPoll = async (
     }
 
     // Without somewhere to put the winner there's nothing for the vote to
-    // decide, so don't ask the club to vote at all.
+    // decide, so don't ask the club to vote at all. That takes both a playlist
+    // and the grant needed to write to it.
+    if (!spotify.canWritePlaylists()) {
+        console.log(
+            `Skipping track poll for guild ${guildId}: Spotify playlist access is not configured. ` +
+            'Run npm run spotify-auth'
+        )
+        return
+    }
+
     if (!(await getOrCreateGuild(guildId))?.playlistId) {
         console.log(`Skipping track poll for guild ${guildId}: no playlist set. Run /recplaylist`)
         return

@@ -35,7 +35,7 @@ Configuration is read from `.env`:
 | `mongodbUri` | yes | MongoDB connection string |
 | `spotifyClientId` | no | Spotify app id, for reading album track lists |
 | `spotifyClientSecret` | no | Spotify app secret |
-| `spotifyRefreshToken` | no | Authorizes adding winning tracks to a playlist |
+| `spotifyRefreshToken` | no | Authorizes adding winning tracks to a playlist, which track polls require |
 | `NODE_ENV` | no | `development` runs the jobs on a fast schedule and opens two-minute polls |
 
 Without the Spotify variables the bot behaves as it always has: it just skips the
@@ -43,26 +43,26 @@ track poll and the playlist.
 
 ## Track polls
 
-When the week's rec is a Spotify album link and the guild has a playlist set, the
-Friday discussion prompt is preceded by a poll on the album's best track. Discord
-polls hold at most ten answers, so an album longer than that is trimmed to its
-ten most popular tracks, listed in album order. The poll closes after 24 hours,
-and the winning track is announced and added to the playlist. A tie goes to the
-more popular track on Spotify.
+When the week's rec is a Spotify album link and the bot can write to the guild's
+playlist, the Friday discussion prompt is preceded by a poll on the album's best
+track. Discord polls hold at most ten answers, so an album longer than that is
+trimmed to its ten most popular tracks, listed in album order. The poll closes
+after 24 hours, and the winning track is announced and added to the playlist. A
+tie goes to the more popular track on Spotify.
 
 A single-track release has nothing to vote on, so it skips the poll and goes
 straight to the playlist.
 
-Recs that aren't Spotify album links are left alone, as are guilds with no
-playlist set: the discussion prompt goes up on its own, as before.
+Recs that aren't Spotify album links are left alone, as are guilds whose winner
+would have nowhere to go: the discussion prompt goes up on its own, as before.
 
 ## Spotify setup
 
 1. Create an app at <https://developer.spotify.com/dashboard>. Copy its client id
-   and secret into `.env` as `spotifyClientId` and `spotifyClientSecret`. This is
-   all that track polls need.
-2. To let the bot maintain a playlist, add `http://127.0.0.1:8888/callback` as a
-   redirect URI in the app's settings, then run:
+   and secret into `.env` as `spotifyClientId` and `spotifyClientSecret`.
+2. Track polls also need a playlist to put their winners in. Add
+   `http://127.0.0.1:8888/callback` as a redirect URI in the app's settings, then
+   run:
 
    ```sh
    npm run spotify-auth
