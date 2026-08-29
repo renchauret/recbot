@@ -81,6 +81,19 @@ export const getMostRecentPickedRec = async (guildId: string): Promise<PickedRec
     return pickedRecs[pickedRecs.length - 1]
 }
 
+/**
+ * Marks a pick discussed, so the prompt and the reminder move on to the next one
+ * rather than repeating this one every week it isn't replaced.
+ */
+export const markRecDiscussed = async (guildId: string, pickedDate: number) =>
+    await runWithCollection(GUILDS_COLLECTION, async (collection: Collection) =>
+        await collection.updateOne(
+            { id: guildId },
+            { $set: { 'pickedRecs.$[rec].discussed': true } },
+            { arrayFilters: [{ 'rec.pickedDate': pickedDate }] }
+        )
+    )
+
 export const getAllGuildIds = async (): Promise<string[]> =>
     runWithCollection(GUILDS_COLLECTION, async (collection: Collection) =>
         (await collection.find().toArray()).map(guild => guild.id)

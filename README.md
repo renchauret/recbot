@@ -12,6 +12,10 @@ picked at random each week, and the club listens and discusses.
 | Friday 9 PM | Picks the next album from a random member's queue |
 | Saturday 4 PM | Tallies the track poll and adds the winner to the club playlist |
 
+Each pick is discussed once. The reminder and the discussion prompt both skip a
+pick that has already been discussed, so a week where nothing new is picked
+passes quietly instead of repeating the last album.
+
 ## Running
 
 ```sh
