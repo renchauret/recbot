@@ -1,12 +1,11 @@
 import { CronJob } from 'cron'
 import type { Message, Poll } from 'discord.js'
 import { getConfig } from '../config/config.ts'
-import { getOrCreateGuild, getUnresolvedTrackPolls, resolveTrackPoll } from '../db/db.ts'
+import { getUnresolvedTrackPolls, resolveTrackPoll } from '../db/db.ts'
 import { fetchMessage } from '../discord/discord-client.ts'
 import type { TrackPoll } from '../models/track-poll.ts'
-import { addTrackToPlaylist } from '../spotify/playlist.ts'
-import { getSpotifyClient } from '../spotify/spotify-client.ts'
 import { pickWinningAnswer, type TalliedAnswer } from '../util/pick-poll-winner.ts'
+import { addWinningTrackToPlaylist } from './add-winning-track.ts'
 
 const TIME_ZONE = 'America/New_York'
 
@@ -22,9 +21,7 @@ const isGone = (error: unknown): boolean =>
 
 const tallyTrackPoll = async (trackPoll: TrackPoll) => {
     const now = Date.now()
-    const endEarlyAfterMs = getConfig().endPollsEarlyAfterMs
-    const dueForEarlyEnd = endEarlyAfterMs !== null && now >= trackPoll.createdAt + endEarlyAfterMs
-    if (now < trackPoll.expiresAt && !dueForEarlyEnd) {
+    if (now < trackPoll.expiresAt) {
         return
     }
 
@@ -46,8 +43,10 @@ const tallyTrackPoll = async (trackPoll: TrackPoll) => {
         return
     }
 
+    // Discord rounds a poll's duration up to a whole hour, so one configured to
+    // run for less than that is still open when it comes due. End it ourselves.
     let poll: Poll = message.poll
-    if (dueForEarlyEnd && now < trackPoll.expiresAt && !poll.resultsFinalized) {
+    if (!poll.resultsFinalized && poll.expiresTimestamp > now) {
         poll = (await poll.end()).poll ?? poll
     }
 
@@ -67,46 +66,19 @@ const tallyTrackPoll = async (trackPoll: TrackPoll) => {
         return
     }
 
-    const addedToPlaylist = await addWinnerToPlaylist(trackPoll, winner)
+    const addedToPlaylist = await addWinningTrackToPlaylist(trackPoll.guildId, winner.trackName, winner.trackUri)
     await announce(
         message,
         `## The best track on ${trackPoll.albumName} is...\n` +
         `### ${winner.trackName}!\n` +
         `${winner.voteCount} vote${winner.voteCount === 1 ? '' : 's'}. ` +
-        (addedToPlaylist
-            ? 'Added to the club playlist.'
-            : 'Set a playlist with **/recplaylist** to collect the winners.')
+        (addedToPlaylist ? 'Added to the club playlist.' : "I couldn't add it to the club playlist.")
     )
     await resolveTrackPoll(trackPoll.messageId, {
         winnerTrackName: winner.trackName,
         winnerTrackUri: winner.trackUri,
         addedToPlaylist: addedToPlaylist
     })
-}
-
-/**
- * Adds the winner to the guild's playlist, reporting whether it landed. A
- * Spotify failure can't be allowed to hold up announcing the result.
- */
-const addWinnerToPlaylist = async (trackPoll: TrackPoll, winner: TalliedAnswer): Promise<boolean> => {
-    const playlistId = (await getOrCreateGuild(trackPoll.guildId))?.playlistId
-    if (!playlistId) {
-        return false
-    }
-
-    const spotify = getSpotifyClient()
-    if (!spotify.canWritePlaylists()) {
-        console.log(`Can't add ${winner.trackName} to playlist ${playlistId}: Spotify playlist access is not configured`)
-        return false
-    }
-
-    try {
-        await addTrackToPlaylist(spotify, playlistId, winner.trackUri)
-        return true
-    } catch (e) {
-        console.error(`Failed to add ${winner.trackUri} to playlist ${playlistId} for guild ${trackPoll.guildId}: ${e}`)
-        return false
-    }
 }
 
 const announce = async (pollMessage: Message, content: string) => {

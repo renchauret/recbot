@@ -2,7 +2,10 @@ export type TrackPollAnswer = {
     // Discord numbers a poll's answers from 1, in the order they were sent.
     answerId: number,
     trackName: string,
-    trackUri: string
+    trackUri: string,
+    // Breaks a tie in the vote. Absent on polls opened before ties were settled
+    // this way.
+    popularity?: number
 }
 
 export type TrackPoll = {

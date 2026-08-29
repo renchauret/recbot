@@ -3,10 +3,9 @@ export type Config = {
     promptDiscussionCron: string,
     reminderCron: string,
     tallyTrackPollCron: string,
-    pollDurationHours: number,
-    // Discord won't schedule a poll for less than an hour, so development ends
-    // them early instead of waiting one out. Null leaves polls alone.
-    endPollsEarlyAfterMs: number | null
+    // Discord won't schedule a poll for less than an hour. Anything shorter is
+    // held to this by ending the poll early instead.
+    pollDurationMs: number
 }
 
 const prodConfig: Config = {
@@ -14,8 +13,7 @@ const prodConfig: Config = {
     promptDiscussionCron: '0 0 16 * * 5',
     reminderCron: '0 0 16 * * 3',
     tallyTrackPollCron: '0 */15 * * * *',
-    pollDurationHours: 24,
-    endPollsEarlyAfterMs: null
+    pollDurationMs: 86_400_000
 }
 
 const devConfig: Config = {
@@ -23,8 +21,7 @@ const devConfig: Config = {
     promptDiscussionCron: '30 * * * * *',
     reminderCron: '10 * * * * *',
     tallyTrackPollCron: '*/20 * * * * *',
-    pollDurationHours: 1,
-    endPollsEarlyAfterMs: 120_000
+    pollDurationMs: 120_000
 }
 
 export const getConfig = (): Config => process.env.NODE_ENV === 'development'

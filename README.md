@@ -36,21 +36,25 @@ Configuration is read from `.env`:
 | `spotifyClientId` | no | Spotify app id, for reading album track lists |
 | `spotifyClientSecret` | no | Spotify app secret |
 | `spotifyRefreshToken` | no | Authorizes adding winning tracks to a playlist |
-| `NODE_ENV` | no | `development` runs the jobs on a fast schedule |
+| `NODE_ENV` | no | `development` runs the jobs on a fast schedule and opens two-minute polls |
 
 Without the Spotify variables the bot behaves as it always has: it just skips the
 track poll and the playlist.
 
 ## Track polls
 
-When the week's rec is a Spotify album link, the Friday discussion prompt is
-preceded by a poll on the album's best track. Discord polls hold at most ten
-answers, so an album longer than that is trimmed to its ten most popular tracks,
-listed in album order. The poll closes after 24 hours, and the winning track is
-announced and added to the guild's playlist. Ties are broken at random.
+When the week's rec is a Spotify album link and the guild has a playlist set, the
+Friday discussion prompt is preceded by a poll on the album's best track. Discord
+polls hold at most ten answers, so an album longer than that is trimmed to its
+ten most popular tracks, listed in album order. The poll closes after 24 hours,
+and the winning track is announced and added to the playlist. A tie goes to the
+more popular track on Spotify.
 
-Recs that aren't Spotify album links are left alone — the discussion prompt goes
-up on its own, as before.
+A single-track release has nothing to vote on, so it skips the poll and goes
+straight to the playlist.
+
+Recs that aren't Spotify album links are left alone, as are guilds with no
+playlist set: the discussion prompt goes up on its own, as before.
 
 ## Spotify setup
 
@@ -67,7 +71,8 @@ up on its own, as before.
    Open the printed URL as the account that owns the playlist and approve. The
    script prints a `spotifyRefreshToken` line to add to `.env`.
 3. In Discord, run `/recplaylist <playlist link>` to choose where winning tracks
-   go. The authorizing account must be able to edit that playlist.
+   go. The authorizing account must be able to edit that playlist. Polls only run
+   for guilds that have one set, since the winner has nowhere else to go.
 
 ## Discord permissions
 
