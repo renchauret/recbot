@@ -4,6 +4,7 @@ import { getConfig } from '../../config/config.ts'
 import { getUnresolvedTrackPolls, resolveTrackPoll } from '../../db/db.ts'
 import { fetchMessage } from '../../discord/discord-client.ts'
 import type { TrackPoll } from '../../models/track-poll.ts'
+import { playlistUrl } from '../../spotify/spotify-urls.ts'
 import { pickWinningAnswer, type TalliedAnswer } from '../../util/pick-poll-winner.ts'
 import { addWinningTrackToPlaylist } from './add-winning-track.ts'
 
@@ -66,18 +67,19 @@ const tallyTrackPoll = async (trackPoll: TrackPoll) => {
         return
     }
 
-    const addedToPlaylist = await addWinningTrackToPlaylist(trackPoll.guildId, winner.trackName, winner.trackUri)
+    const playlistId = await addWinningTrackToPlaylist(trackPoll.guildId, winner.trackName, winner.trackUri)
     await announce(
         message,
         `## The best track on ${trackPoll.albumName} is...\n` +
         `### ${winner.trackName}!\n` +
-        `${winner.voteCount} vote${winner.voteCount === 1 ? '' : 's'}. ` +
-        (addedToPlaylist ? 'Added to the club playlist.' : "I couldn't add it to the club playlist.")
+        (playlistId
+            ? `Added to <${playlistUrl(playlistId)}>`
+            : "I couldn't add it to the club playlist.")
     )
     await resolveTrackPoll(trackPoll.messageId, {
         winnerTrackName: winner.trackName,
         winnerTrackUri: winner.trackUri,
-        addedToPlaylist: addedToPlaylist
+        addedToPlaylist: playlistId !== null
     })
 }
 

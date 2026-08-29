@@ -3,7 +3,7 @@ import type { RecbotCommand } from '../commands.ts'
 import { setPlaylistId } from '../../db/db.ts'
 import { fetchPlaylistName } from '../../spotify/playlist.ts'
 import { getSpotifyClient } from '../../spotify/spotify-client.ts'
-import { parsePlaylistId } from '../../spotify/spotify-urls.ts'
+import { parsePlaylistId, playlistUrl } from '../../spotify/spotify-urls.ts'
 
 export const recplaylist: RecbotCommand = {
     data: new SlashCommandBuilder()
@@ -26,7 +26,7 @@ export const recplaylist: RecbotCommand = {
                 await setPlaylistId(interaction.guildId, playlistId)
                 const name = await fetchPlaylistName(getSpotifyClient(), playlistId)
                 message = `Winning tracks will be added to ${name ? `**${name}**` : 'the playlist'}: `
-                    + `<https://open.spotify.com/playlist/${playlistId}>`
+                    + `<${playlistUrl(playlistId)}>`
             } catch (e) {
                 console.error(`Failed to set playlist for guild ${interaction.guildId}: ${e}`)
                 message = 'An error occurred. Please try again.'

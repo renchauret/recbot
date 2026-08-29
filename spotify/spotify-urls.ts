@@ -24,6 +24,9 @@ const firstMatch = (value: string, patterns: RegExp[]): string | null => {
 export const parseAlbumId = (rec: string): string | null =>
     rec ? firstMatch(rec.trim(), linkPatterns('album')) : null
 
+export const playlistUrl = (playlistId: string): string =>
+    `https://open.spotify.com/playlist/${playlistId}`
+
 /**
  * Accepts a bare id as well as a link, since this one is typed deliberately by a
  * user answering a slash command rather than scraped out of free text.

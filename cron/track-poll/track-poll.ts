@@ -11,7 +11,7 @@ import {
 import { fetchAlbum } from '../../spotify/album.ts'
 import { selectPollTracks } from '../../spotify/select-poll-tracks.ts'
 import { getSpotifyClient } from '../../spotify/spotify-client.ts'
-import { parseAlbumId } from '../../spotify/spotify-urls.ts'
+import { parseAlbumId, playlistUrl } from '../../spotify/spotify-urls.ts'
 import { formatDuration } from '../../util/format-duration.ts'
 import { addWinningTrackToPlaylist } from './add-winning-track.ts'
 
@@ -110,10 +110,12 @@ const addSingleTrack = async (
     albumName: string,
     track: { name: string, uri: string }
 ): Promise<void> => {
-    const added = await addWinningTrackToPlaylist(guildId, track.name, track.uri)
+    const playlistId = await addWinningTrackToPlaylist(guildId, track.name, track.uri)
     await channel.send(
         `## ${albumName} only has one track, so it wins by default.\n` +
         `### ${track.name}\n` +
-        (added ? 'Added to the club playlist.' : "I couldn't add it to the club playlist.")
+        (playlistId
+            ? `Added to <${playlistUrl(playlistId)}>`
+            : "I couldn't add it to the club playlist.")
     )
 }

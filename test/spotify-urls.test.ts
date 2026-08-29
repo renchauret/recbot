@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { parseAlbumId, parsePlaylistId } from '../spotify/spotify-urls.ts'
+import { parseAlbumId, parsePlaylistId, playlistUrl } from '../spotify/spotify-urls.ts'
 
 const ALBUM_ID = '3QiZaIVgSMuznmUNLPMG8t'
 
@@ -49,4 +49,12 @@ test('returns null for playlist input that is not a playlist', () => {
     assert.equal(parsePlaylistId(`https://open.spotify.com/album/${ALBUM_ID}`), null)
     assert.equal(parsePlaylistId('my playlist'), null)
     assert.equal(parsePlaylistId(''), null)
+})
+
+test('builds a playlist link from an id', () => {
+    assert.equal(playlistUrl(ALBUM_ID), `https://open.spotify.com/playlist/${ALBUM_ID}`)
+})
+
+test('round-trips a playlist link back to its id', () => {
+    assert.equal(parsePlaylistId(playlistUrl(ALBUM_ID)), ALBUM_ID)
 })
