@@ -84,7 +84,9 @@ export const createSpotifyClient = (
         })
 
         if (!response.ok) {
-            throw new SpotifyError(response.status, `Spotify token request failed: ${await readBody(response)}`)
+            const body = await readBody(response)
+            console.error(`Failed to request Spotify ${params.get('grant_type')} token (status ${response.status}): ${body}`)
+            throw new SpotifyError(response.status, `Spotify token request failed: ${body}`)
         }
 
         const token = await response.json() as TokenResponse
@@ -145,12 +147,15 @@ export const createSpotifyClient = (
         // A token revoked on Spotify's side still looks valid to us until it's
         // used, so drop the cached one and let the next call mint a fresh one.
         if (response.status === 401) {
+            console.warn(`Spotify rejected the ${as} token for ${options.method ?? 'GET'} ${path}, retrying with a fresh one`)
             clearToken(as)
             response = await send(path, options, await getToken())
         }
 
         if (!response.ok) {
-            throw new SpotifyError(response.status, `Spotify ${options.method ?? 'GET'} ${path} failed: ${await readBody(response)}`)
+            const body = await readBody(response)
+            console.error(`Failed Spotify ${options.method ?? 'GET'} ${path} as ${as} (status ${response.status}): ${body}`)
+            throw new SpotifyError(response.status, `Spotify ${options.method ?? 'GET'} ${path} failed: ${body}`)
         }
 
         // Adding playlist items answers 201 with a body, but deletes and some
