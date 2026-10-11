@@ -4,6 +4,7 @@ import { getAllGuildIds, getMostRecentPickedRec, markRecDiscussed } from '../db/
 import { randomInt } from 'crypto'
 import { getPreferredChannel } from '../util/get-preferred-channel.ts'
 import { postTrackPoll } from './track-poll/track-poll.ts'
+import { logger } from '../util/logger.ts'
 
 const promptDiscussion = async (guildId: string) => {
     const channel = await getPreferredChannel(guildId)
@@ -13,14 +14,14 @@ const promptDiscussion = async (guildId: string) => {
 
     const latestPickedRec = await getMostRecentPickedRec(guildId)
     if (!latestPickedRec) {
-        console.error(`No latest picked rec to discuss for guild ${guildId}`)
+        logger.error(`No latest picked rec to discuss for guild ${guildId}`)
         return
     }
 
     // Each pick is discussed once. Until the next one lands there's nothing new
     // to talk about.
     if (latestPickedRec.discussed) {
-        console.log(`Already discussed ${latestPickedRec.name} in guild ${guildId}, waiting on the next pick`)
+        logger.log(`Already discussed ${latestPickedRec.name} in guild ${guildId}, waiting on the next pick`)
         return
     }
 
@@ -29,7 +30,7 @@ const promptDiscussion = async (guildId: string) => {
     try {
         await postTrackPoll(guildId, channel, latestPickedRec.name)
     } catch (e) {
-        console.error(`Failed to post track poll for guild ${guildId}: ${e}`)
+        logger.error(`Failed to post track poll for guild ${guildId}: ${e}`)
     }
 
     await channel.send(`## Let's discuss!\n${messageOptions[randomInt(0, messageOptions.length)](latestPickedRec.name)}`)
@@ -44,11 +45,11 @@ const promptDiscussions = async () => {
         const results = await Promise.allSettled(guildIds.map(guildId => promptDiscussion(guildId)))
         results.forEach((result, i) => {
             if (result.status === 'rejected') {
-                console.error(`Failed to prompt discussion for guild ${guildIds[i]}: ${result.reason}`)
+                logger.error(`Failed to prompt discussion for guild ${guildIds[i]}: ${result.reason}`)
             }
         })
     } catch (e) {
-        console.error(`Failed to prompt discussions: ${e}`)
+        logger.error(`Failed to prompt discussions: ${e}`)
     }
 }
 
@@ -60,7 +61,7 @@ export const startPromptDiscussionJob = () => {
         start: true,
         timeZone: 'America/New_York'
     })
-    console.log(`started promptdiscussion job with cronTime ${cron}`)
+    logger.log(`started promptdiscussion job with cronTime ${cron}`)
 }
 
 const messageOptions: ((recName: string) => string)[] = [

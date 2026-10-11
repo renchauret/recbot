@@ -3,6 +3,7 @@ import type { Guild } from '../models/guild.ts'
 import type { PickedRec } from '../models/picked-rec.ts'
 import type { Profile } from '../models/profile.ts'
 import type { TrackPoll } from '../models/track-poll.ts'
+import { logger } from '../util/logger.ts'
 
 const GUILDS_COLLECTION = 'guilds'
 const PROFILES_COLLECTION = 'profiles'
@@ -30,7 +31,7 @@ const runWithMongoClient = async <T> (toRun: (client: MongoClient) => T): Promis
         try {
             await client.close();
         } catch (e) {
-            console.error(`Failed to close mongo client: ${e}`)
+            logger.error(`Failed to close mongo client: ${e}`)
         }
     }
 }
@@ -173,7 +174,7 @@ export const modifyRecs = async (
         await saveRecsToProfile(guildId, profileId, recs)
         return recs
     } catch (e) {
-        console.error(`Failed to modify recs for user ${profileId} in guild ${guildId}: ${e}`)
+        logger.error(`Failed to modify recs for user ${profileId} in guild ${guildId}: ${e}`)
         throw e
     }
 }
@@ -204,7 +205,7 @@ export const updatePity = async (eligibleProfiles: Profile[], pickedProfile: Pro
             ]);
         });
     } catch (e) {
-        console.error(`Failed to update pity: ${e}`);
+        logger.error(`Failed to update pity: ${e}`);
         throw e;
     }
 }

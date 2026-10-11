@@ -1,4 +1,5 @@
 import type { SpotifyClient } from './spotify-client.ts'
+import { logger } from '../util/logger.ts'
 
 export const addTrackToPlaylist = async (
     client: SpotifyClient,
@@ -29,7 +30,7 @@ export const fetchPlaylistName = async (
         )
         return playlist.name ?? null
     } catch (e) {
-        console.error(`Failed to fetch name of playlist ${playlistId}: ${e}`)
+        logger.error(`Failed to fetch name of playlist ${playlistId}: ${e}`)
         return null
     }
 }

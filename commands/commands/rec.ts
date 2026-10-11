@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
 import type { RecbotCommand } from '../commands.ts'
 import { modifyRecs } from '../../db/db.ts'
 import { formatRecs } from '../utils.ts'
+import { logger } from '../../util/logger.ts'
 
 export const rec: RecbotCommand = {
     data: new SlashCommandBuilder()
@@ -23,13 +24,13 @@ export const rec: RecbotCommand = {
             })
             message = `${user.displayName} recommended <${recommendation}>\n### New rec queue:\n${formatRecs(recs)}`
         } catch (e) {
-            console.error(`Failed to perform rec command for user ${user.id} in guild ${interaction.guildId}: ${e}`)
+            logger.error(`Failed to perform rec command for user ${user.id} in guild ${interaction.guildId}: ${e}`)
             message = 'An error occurred. Please try again.'
         }
         try {
             await interaction.reply(message)
         } catch (e) {
-            console.error(`Failed to respond to rec interaction from user ${user.id} in guild ${interaction.guildId}: ${e}`)
+            logger.error(`Failed to respond to rec interaction from user ${user.id} in guild ${interaction.guildId}: ${e}`)
         }
     }
 }

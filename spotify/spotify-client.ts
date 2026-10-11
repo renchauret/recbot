@@ -1,3 +1,5 @@
+import { logger } from '../util/logger.ts'
+
 const TOKEN_URL = 'https://accounts.spotify.com/api/token'
 const API_BASE = 'https://api.spotify.com/v1'
 
@@ -85,7 +87,7 @@ export const createSpotifyClient = (
 
         if (!response.ok) {
             const body = await readBody(response)
-            console.error(`Failed to request Spotify ${params.get('grant_type')} token (status ${response.status}): ${body}`)
+            logger.error(`Failed to request Spotify ${params.get('grant_type')} token (status ${response.status}): ${body}`)
             throw new SpotifyError(response.status, `Spotify token request failed: ${body}`)
         }
 
@@ -147,14 +149,14 @@ export const createSpotifyClient = (
         // A token revoked on Spotify's side still looks valid to us until it's
         // used, so drop the cached one and let the next call mint a fresh one.
         if (response.status === 401) {
-            console.warn(`Spotify rejected the ${as} token for ${options.method ?? 'GET'} ${path}, retrying with a fresh one`)
+            logger.warn(`Spotify rejected the ${as} token for ${options.method ?? 'GET'} ${path}, retrying with a fresh one`)
             clearToken(as)
             response = await send(path, options, await getToken())
         }
 
         if (!response.ok) {
             const body = await readBody(response)
-            console.error(`Failed Spotify ${options.method ?? 'GET'} ${path} as ${as} (status ${response.status}): ${body}`)
+            logger.error(`Failed Spotify ${options.method ?? 'GET'} ${path} as ${as} (status ${response.status}): ${body}`)
             throw new SpotifyError(response.status, `Spotify ${options.method ?? 'GET'} ${path} failed: ${body}`)
         }
 

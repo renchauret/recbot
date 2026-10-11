@@ -3,6 +3,7 @@ import { CronJob } from 'cron'
 import { DateTime } from 'luxon'
 import { getAllGuildIds, getMostRecentPickedRec } from '../db/db.ts'
 import { getPreferredChannel } from '../util/get-preferred-channel.ts'
+import { logger } from '../util/logger.ts'
 
 const sendReminder = async (guildId: string) => {
     const channel = await getPreferredChannel(guildId)
@@ -12,13 +13,13 @@ const sendReminder = async (guildId: string) => {
 
     const latestPickedRec = await getMostRecentPickedRec(guildId)
     if (!latestPickedRec) {
-        console.error(`No latest picked rec to remind for guild ${guildId}`)
+        logger.error(`No latest picked rec to remind for guild ${guildId}`)
         return
     }
 
     // No point chasing anyone about an album the club has already discussed.
     if (latestPickedRec.discussed) {
-        console.log(`Already discussed ${latestPickedRec.name} in guild ${guildId}, skipping the reminder`)
+        logger.log(`Already discussed ${latestPickedRec.name} in guild ${guildId}, skipping the reminder`)
         return
     }
 
@@ -43,11 +44,11 @@ const sendReminders = async () => {
         const results = await Promise.allSettled(guildIds.map(guildId => sendReminder(guildId)))
         results.forEach((result, i) => {
             if (result.status === 'rejected') {
-                console.error(`Failed to remind guild ${guildIds[i]}: ${result.reason}`)
+                logger.error(`Failed to remind guild ${guildIds[i]}: ${result.reason}`)
             }
         })
     } catch (e) {
-        console.error(`Failed to remind: ${e}`)
+        logger.error(`Failed to remind: ${e}`)
     }
 }
 
@@ -59,5 +60,5 @@ export const startReminderJob = () => {
         start: true,
         timeZone: 'America/New_York'
     })
-    console.log(`started reminder job with cronTime ${cron}`)
+    logger.log(`started reminder job with cronTime ${cron}`)
 }
