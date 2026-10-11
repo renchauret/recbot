@@ -7,7 +7,9 @@
   "scripts": {
     "start": "node --experimental-strip-types index.ts",
     "deploy-commands": "node --experimental-strip-types commands/deploy-commands.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --experimental-strip-types --test 'test/**/*.test.ts'",
+    "typecheck": "tsc",
+    "spotify-auth": "node --experimental-strip-types scripts/spotify-auth.ts"
   },
   "dependencies": {
     "@discordjs/builders": "^1.11.3",

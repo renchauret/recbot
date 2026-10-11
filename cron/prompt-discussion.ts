@@ -1,8 +1,9 @@
 import { CronJob } from 'cron'
 import { getConfig } from '../config/config.ts'
-import { getAllGuildIds, getMostRecentPickedRec } from '../db/db.ts'
+import { getAllGuildIds, getMostRecentPickedRec, markRecDiscussed } from '../db/db.ts'
 import { randomInt } from 'crypto'
 import { getPreferredChannel } from '../util/get-preferred-channel.ts'
+import { postTrackPoll } from './track-poll/track-poll.ts'
 
 const promptDiscussion = async (guildId: string) => {
     const channel = await getPreferredChannel(guildId)
@@ -16,7 +17,25 @@ const promptDiscussion = async (guildId: string) => {
         return
     }
 
+    // Each pick is discussed once. Until the next one lands there's nothing new
+    // to talk about.
+    if (latestPickedRec.discussed) {
+        console.log(`Already discussed ${latestPickedRec.name} in guild ${guildId}, waiting on the next pick`)
+        return
+    }
+
+    // The poll goes up first so it sits above the discussion prompt. A Spotify
+    // failure shouldn't cost the club its discussion.
+    try {
+        await postTrackPoll(guildId, channel, latestPickedRec.name)
+    } catch (e) {
+        console.error(`Failed to post track poll for guild ${guildId}: ${e}`)
+    }
+
     await channel.send(`## Let's discuss!\n${messageOptions[randomInt(0, messageOptions.length)](latestPickedRec.name)}`)
+
+    // Only after the prompt is out, so a failed send is retried on the next tick.
+    await markRecDiscussed(guildId, latestPickedRec.pickedDate)
 }
 
 const promptDiscussions = async () => {

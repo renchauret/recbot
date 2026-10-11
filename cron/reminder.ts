@@ -16,6 +16,12 @@ const sendReminder = async (guildId: string) => {
         return
     }
 
+    // No point chasing anyone about an album the club has already discussed.
+    if (latestPickedRec.discussed) {
+        console.log(`Already discussed ${latestPickedRec.name} in guild ${guildId}, skipping the reminder`)
+        return
+    }
+
     const mockPromptDiscussionCronJob = CronJob.from({
         cronTime: getConfig().promptDiscussionCron,
         onTick: () => {},
