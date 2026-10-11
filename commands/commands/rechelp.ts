@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
 import { commands, type RecbotCommand } from '../commands.ts'
+import { logger } from '../../util/logger.ts'
 
 export const rechelp: RecbotCommand = {
     data: new SlashCommandBuilder()
@@ -14,7 +15,7 @@ export const rechelp: RecbotCommand = {
         try {
             await interaction.reply(`${intro}\n### Commands:\n${formattedCommands}`);
         } catch (e) {
-            console.error(`Failed to respond to rechelp interaction from user ${interaction.user.id} in guild ${interaction.guildId}: ${e}`)
+            logger.error(`Failed to respond to rechelp interaction from user ${interaction.user.id} in guild ${interaction.guildId}: ${e}`)
         }
     }
 }

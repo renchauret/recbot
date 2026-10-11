@@ -5,6 +5,7 @@ import { getAllGuildIds, getMostRecentPickedRec, getProfiles, savePickRec, updat
 import { getPreferredChannel } from '../util/get-preferred-channel.ts'
 import { getExpectedPreviousPick } from '../util/expected-previous-pick.ts'
 import type { Profile } from '../models/profile.ts'
+import { logger } from '../util/logger.ts'
 
 const TIME_ZONE = 'America/New_York'
 
@@ -16,7 +17,7 @@ const pickRec = async (guildId: string) => {
 
     const profiles = (await getProfiles(guildId)).filter(profile => profile.recs.length > 0 && !profile.disabled)
     if (!profiles || profiles.length === 0) {
-        console.error(`No recs to choose from for guild ${guildId}`)
+        logger.error(`No recs to choose from for guild ${guildId}`)
         return
     }
 
@@ -35,11 +36,11 @@ const pickRecs = async () => {
         const results = await Promise.allSettled(guildIds.map(guildId => pickRec(guildId)))
         results.forEach((result, i) => {
             if (result.status === 'rejected') {
-                console.error(`Failed to pick rec for guild ${guildIds[i]}: ${result.reason}`)
+                logger.error(`Failed to pick rec for guild ${guildIds[i]}: ${result.reason}`)
             }
         })
     } catch (e) {
-        console.error(`Failed to pick recs: ${e}`)
+        logger.error(`Failed to pick recs: ${e}`)
     }
 }
 
@@ -59,7 +60,7 @@ const catchUpMissedPick = async (guildId: string, dueAt: Date) => {
         return
     }
 
-    console.log(
+    logger.log(
         `Guild ${guildId} missed the pick due at ${dueAt.toISOString()} ` +
         `(last pick was ${new Date(latestPickedRec.pickedDate).toISOString()}), picking now`
     )
@@ -77,11 +78,11 @@ const catchUpMissedPicks = async () => {
         const results = await Promise.allSettled(guildIds.map(guildId => catchUpMissedPick(guildId, dueAt)))
         results.forEach((result, i) => {
             if (result.status === 'rejected') {
-                console.error(`Failed to catch up missed pick for guild ${guildIds[i]}: ${result.reason}`)
+                logger.error(`Failed to catch up missed pick for guild ${guildIds[i]}: ${result.reason}`)
             }
         })
     } catch (e) {
-        console.error(`Failed to catch up missed picks: ${e}`)
+        logger.error(`Failed to catch up missed picks: ${e}`)
     }
 }
 
@@ -117,7 +118,7 @@ export const startPickRecJob = () => {
         start: true,
         timeZone: TIME_ZONE
     })
-    console.log(`started pickrec job with cronTime ${cron}`)
+    logger.log(`started pickrec job with cronTime ${cron}`)
 }
 
 /**

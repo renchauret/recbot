@@ -1,6 +1,7 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
 import type { RecbotCommand } from '../commands.ts'
 import { createGuildOrUpdatePreferredChannel } from '../../db/db.ts'
+import { logger } from '../../util/logger.ts'
 
 export const recinit: RecbotCommand = {
     data: new SlashCommandBuilder()
@@ -10,7 +11,7 @@ export const recinit: RecbotCommand = {
         try {
             await createGuildOrUpdatePreferredChannel(interaction.guildId, interaction.channelId)
         } catch (e) {
-            console.error(`Failed to execute recinit command from user ${interaction.user.id} in guild ${interaction.guildId}: ${e}`)
+            logger.error(`Failed to execute recinit command from user ${interaction.user.id} in guild ${interaction.guildId}: ${e}`)
         }
         const message = '# Welcome to Music Club!\nUse me to build your queue of recommended albums. '
             + "Every Friday at 9 PM, I'll pick the first album off of a random person's queue. "
@@ -22,7 +23,7 @@ export const recinit: RecbotCommand = {
         try {
             await interaction.reply(message)
         } catch (e) {
-            console.error(`Failed to respond to recinit interaction from user ${interaction.user.id} in guild ${interaction.guildId}: ${e}`)
+            logger.error(`Failed to respond to recinit interaction from user ${interaction.user.id} in guild ${interaction.guildId}: ${e}`)
         }
     }
 }

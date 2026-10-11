@@ -14,6 +14,7 @@ import { getSpotifyClient } from '../../spotify/spotify-client.ts'
 import { parseAlbumId, playlistUrl } from '../../spotify/spotify-urls.ts'
 import { formatDuration } from '../../util/format-duration.ts'
 import { addWinningTrackToPlaylist } from './add-winning-track.ts'
+import { logger } from '../../util/logger.ts'
 
 // A one-answer poll isn't a vote.
 const MIN_POLL_ANSWERS = 2
@@ -36,7 +37,7 @@ export const postTrackPoll = async (
 
     const spotify = getSpotifyClient()
     if (!spotify.canRead()) {
-        console.log(`Skipping track poll for guild ${guildId}: Spotify credentials are not configured`)
+        logger.log(`Skipping track poll for guild ${guildId}: Spotify credentials are not configured`)
         return
     }
 
@@ -44,7 +45,7 @@ export const postTrackPoll = async (
     // decide, so don't ask the club to vote at all. That takes both a playlist
     // and the grant needed to write to it.
     if (!spotify.canWritePlaylists()) {
-        console.log(
+        logger.log(
             `Skipping track poll for guild ${guildId}: Spotify playlist access is not configured. ` +
             'Run npm run spotify-auth'
         )
@@ -52,13 +53,13 @@ export const postTrackPoll = async (
     }
 
     if (!(await getOrCreateGuild(guildId))?.playlistId) {
-        console.log(`Skipping track poll for guild ${guildId}: no playlist set. Run /recplaylist`)
+        logger.log(`Skipping track poll for guild ${guildId}: no playlist set. Run /recplaylist`)
         return
     }
 
     const album = await fetchAlbum(spotify, albumId)
     if (album.tracks.length === 0) {
-        console.error(`Skipping track poll for guild ${guildId}: album ${album.name} has no tracks`)
+        logger.error(`Skipping track poll for guild ${guildId}: album ${album.name} has no tracks`)
         return
     }
 

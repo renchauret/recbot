@@ -7,6 +7,7 @@ import type { TrackPoll } from '../../models/track-poll.ts'
 import { playlistUrl } from '../../spotify/spotify-urls.ts'
 import { pickWinningAnswer, type TalliedAnswer } from '../../util/pick-poll-winner.ts'
 import { addWinningTrackToPlaylist } from './add-winning-track.ts'
+import { logger } from '../../util/logger.ts'
 
 const TIME_ZONE = 'America/New_York'
 
@@ -33,13 +34,13 @@ const tallyTrackPoll = async (trackPoll: TrackPoll) => {
         if (!isGone(e)) {
             throw e
         }
-        console.warn(`Track poll message ${trackPoll.messageId} in guild ${trackPoll.guildId} is gone, dropping it`)
+        logger.warn(`Track poll message ${trackPoll.messageId} in guild ${trackPoll.guildId} is gone, dropping it`)
         await resolveTrackPoll(trackPoll.messageId, {})
         return
     }
 
     if (!message?.poll) {
-        console.warn(`Message ${trackPoll.messageId} in guild ${trackPoll.guildId} no longer carries a poll, dropping it`)
+        logger.warn(`Message ${trackPoll.messageId} in guild ${trackPoll.guildId} no longer carries a poll, dropping it`)
         await resolveTrackPoll(trackPoll.messageId, {})
         return
     }
@@ -85,7 +86,7 @@ const tallyTrackPoll = async (trackPoll: TrackPoll) => {
 
 const announce = async (pollMessage: Message, content: string) => {
     if (!pollMessage.channel.isSendable()) {
-        console.error(`Channel ${pollMessage.channelId} is no longer sendable, skipping the poll result`)
+        logger.error(`Channel ${pollMessage.channelId} is no longer sendable, skipping the poll result`)
         return
     }
     await pollMessage.channel.send(content)
@@ -97,11 +98,11 @@ const tallyTrackPolls = async () => {
         const results = await Promise.allSettled(trackPolls.map(trackPoll => tallyTrackPoll(trackPoll)))
         results.forEach((result, i) => {
             if (result.status === 'rejected') {
-                console.error(`Failed to tally track poll ${trackPolls[i].messageId}: ${result.reason}`)
+                logger.error(`Failed to tally track poll ${trackPolls[i].messageId}: ${result.reason}`)
             }
         })
     } catch (e) {
-        console.error(`Failed to tally track polls: ${e}`)
+        logger.error(`Failed to tally track polls: ${e}`)
     }
 }
 
@@ -113,5 +114,5 @@ export const startTallyTrackPollJob = () => {
         start: true,
         timeZone: TIME_ZONE
     })
-    console.log(`started tallytrackpoll job with cronTime ${cron}`)
+    logger.log(`started tallytrackpoll job with cronTime ${cron}`)
 }

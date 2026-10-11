@@ -1,6 +1,7 @@
 import { getOrCreateGuild } from '../../db/db.ts'
 import { addTrackToPlaylist } from '../../spotify/playlist.ts'
 import { getSpotifyClient } from '../../spotify/spotify-client.ts'
+import { logger } from '../../util/logger.ts'
 
 /**
  * Adds a winning track to the guild's playlist, returning the playlist it landed
@@ -14,13 +15,13 @@ export const addWinningTrackToPlaylist = async (
 ): Promise<string | null> => {
     const playlistId = (await getOrCreateGuild(guildId))?.playlistId
     if (!playlistId) {
-        console.error(`Can't add ${trackName} to a playlist: guild ${guildId} has none set`)
+        logger.error(`Can't add ${trackName} to a playlist: guild ${guildId} has none set`)
         return null
     }
 
     const spotify = getSpotifyClient()
     if (!spotify.canWritePlaylists()) {
-        console.error(`Can't add ${trackName} to playlist ${playlistId}: Spotify playlist access is not configured`)
+        logger.error(`Can't add ${trackName} to playlist ${playlistId}: Spotify playlist access is not configured`)
         return null
     }
 
@@ -28,7 +29,7 @@ export const addWinningTrackToPlaylist = async (
         await addTrackToPlaylist(spotify, playlistId, trackUri)
         return playlistId
     } catch (e) {
-        console.error(`Failed to add ${trackUri} to playlist ${playlistId} for guild ${guildId}: ${e}`)
+        logger.error(`Failed to add ${trackUri} to playlist ${playlistId} for guild ${guildId}: ${e}`)
         return null
     }
 }
